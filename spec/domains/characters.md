@@ -14,10 +14,10 @@ Full characters have four resource meters:
 
 | Meter | Range | Color | Description |
 |-------|-------|-------|-------------|
-| **Stress** | 0 – effective_max | `#c0392b` (red) | Harm. Hitting effective max triggers trauma. |
-| **Free Time** | 0 – 20 | `#27ae60` (green) | Downtime capacity. Each downtime action costs 1. |
-| **Plot** | 0 – 5 (can temporarily exceed) | `#d4a017` (amber) | Each spent = one guaranteed success (a 6). Clamped to 5 at session end. |
-| **Gnosis** | 0 – 23 | `#805ad5` (purple) | Magical resource. Consumed as sacrifice in magic actions. |
+| **Stress** | 0 – effective_max | `#e05545` (red) | Harm. Hitting effective max triggers trauma. |
+| **Free Time** | 0 – 20 | `#34d399` (emerald) | Downtime capacity. Each downtime action costs 1. |
+| **Plot** | 0 – 5 (can temporarily exceed) | `#f59e0b` (amber) | Each spent = one guaranteed success (a 6). Clamped to 5 at session end. |
+| **Gnosis** | 0 – 23 | `#a78bfa` (violet) | Magical resource. Consumed as sacrifice in magic actions. |
 
 **Effective stress max** = `STRESS_MAX (9) - trauma_count`. The API provides `effective_stress_max` on the character detail response.
 

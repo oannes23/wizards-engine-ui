@@ -22,9 +22,9 @@ Every relationship in the system is a **Bond**. Bonds are directional edges conn
 
 PC bonds have mechanical depth:
 
-- **Charges** (0–5): Start at 5. Used as proposal modifier (+1d, no charge cost). GM can strain bonds (−1 charge) as consequence.
-- **Degradation** (integer): When charges hit 0, charges reset to effective max and degradation increments by 1.
-- **Effective max charges** = `CHARGE_MAX (5) - degradation_count`
+- **Charges** (0–5): Start at 5. Used as proposal modifier (+1d, costs 1 charge — same as core/role traits). GM can also strain bonds (−1 charge) as a consequence.
+- **Degradation** (API field: `degradations`): When charges hit 0, charges auto-recharge to effective max and degradation increments by 1.
+- **Effective max charges** = `CHARGE_MAX (5) - degradations`
 - **Maintain Bond** (direct action, 1 FT): Restores charges to effective max.
 
 ### ChargeDots Display

@@ -110,7 +110,6 @@ Dynamic form per action type. Key elements:
 | `new_bond` | Medium — polymorphic target picker + optional retire |
 | `use_skill` | Medium — skill selector + modifiers + plot spend |
 | `work_on_project` | Low — story/clock picker + narrative |
-| `new_trait`, `new_bond` | Low-Medium — target selection forms |
 | `regain_gnosis`, `rest` | Low — modifiers only |
 
 ## Proposal Detail (`/proposals/[id]`)

@@ -62,7 +62,7 @@ System proposals appear at the top of the GM queue with visual urgency.
   modifiers: {
     core_trait_id?: string | null     // +1d, costs 1 charge
     role_trait_id?: string | null     // +1d, costs 1 charge
-    bond_id?: string | null           // +1d, no charge cost
+    bond_id?: string | null           // +1d, costs 1 charge
   }
   plot_spend?: number                 // each = 1 guaranteed success
 }

@@ -11,6 +11,10 @@ This directory contains the full project specification for the Wizards Engine fr
 
 The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md). These specs decompose that monolithic document into addressable, maintainable pieces for development.
 
+**[Deepening Roadmap](DEEPENING_ROADMAP.md)** — Tracks the spec interrogation order and progress.
+
+**[Backend Change Requests](api/backend-change-requests.md)** — Requested API changes for handoff to the backend agent.
+
 ---
 
 ## Tech Stack Decisions

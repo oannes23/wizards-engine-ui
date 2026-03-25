@@ -10,15 +10,15 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Bond Graph** — The traversable network of all active bonds among Game Objects. Drives visibility rules: 1-hop (bonded/commonly present), 2-hop (familiar/often present), 3-hop (public/sometimes present). After a non-Character node, the next hop must go through a Character.
 
-**Charge** — An integer resource (0–5) on a trait or PC bond. Consumed when the trait/bond is invoked as a modifier (+1d). Rechargeable via direct actions (1 FT).
+**Charge** — An integer resource (0–5) on a character trait (core/role) or PC bond. Consumed (−1) when invoked as a proposal modifier (+1d). All three trait subtypes share this mechanic: **Core Traits** and **Role Traits** become unusable at 0 charges until recharged (1 FT → back to 5). **Bond Traits** (PC bonds) auto-recharge when hitting 0, but with max charges permanently decreased by 1 (see Degradation).
 
 **Clock** — A Blades-in-the-Dark-style progress tracker with N segments and M filled. Can be standalone or associated with a Game Object. Completion triggers a `resolve_clock` system proposal.
 
 **Core Trait** — A character trait in one of the 2 core slots. Has charges. Linked to a Trait Template. Provides +1d as modifier, costs 1 charge.
 
-**Degradation** — An integer count on a PC bond recording how many times charges have hit 0 and reset. Permanently reduces effective max charges (effective max = 5 - degradation_count).
+**Degradation** — An integer count (API field: `degradations`) on a PC bond recording how many times charges have hit 0 and auto-recharged. Each occurrence permanently reduces effective max charges (effective max = 5 − degradations). A bond with degradations = 3 has an effective max of 2.
 
-**Effective Max** — A derived maximum: for Stress, it is 9 minus trauma count; for bond charges, it is 5 minus degradation count.
+**Effective Max** — A derived maximum: for Stress, it is 9 minus trauma count; for bond charges, it is 5 minus degradations.
 
 **Free Time (FT)** — A character meter (0–20). Each downtime action costs 1 FT. Gained at session start based on `time_now` delta.
 
@@ -36,7 +36,7 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Magic Stat** — One of five magical disciplines: `being`, `wyrding`, `summoning`, `enchanting`, `dreaming`. Has level (0–5) and XP (0–4, resets on level-up at 5 XP).
 
-**Meter** — One of four numeric resource bars on a full (PC) character: Stress (`#c0392b` red), Free Time (`#27ae60` green), Plot (`#d4a017` amber), Gnosis (`#805ad5` purple).
+**Meter** — One of four numeric resource bars on a full (PC) character: Stress (`#e05545` red), Free Time (`#34d399` emerald), Plot (`#f59e0b` amber), Gnosis (`#a78bfa` violet).
 
 **NPC** — Non-Player Character. Represented as a simplified character (`detail_level: "simplified"`). Has bonds but no meters, skills, magic stats, or traits with charges.
 
