@@ -1,6 +1,7 @@
 # API Endpoint Contract
 
-> Last verified against FRONTEND_SEED.md: 2026-03-23
+> Status: Deepened
+> Last verified against backend Pydantic schemas: 2026-03-26
 
 All paths are relative to `/api/v1/`. Auth column: `None` = no auth required, `Any` = any authenticated user, `GM` = GM role only, `Owner/GM` = resource owner or GM.
 
@@ -36,7 +37,7 @@ Error: 409 if GM already exists
 
 Request: `{ code: string, character_name: string, display_name: string }`
 
-Response: User object + sets cookie
+Response: UserResponse + sets cookie
 
 ---
 
@@ -46,7 +47,7 @@ Response: User object + sets cookie
 |--------|------|------|-------------|
 | `GET` | `/me` | Any | Current user identity |
 | `PATCH` | `/me` | Any | Update display name |
-| `POST` | `/me/character` | GM | Create character linked to GM |
+| `POST` | `/me/character` | GM | Create full (PC) character linked to GM |
 | `POST` | `/me/refresh-link` | Any | Rotate own login code |
 
 ---
@@ -102,7 +103,7 @@ Maintain bond body: `{ bond_instance_id, narrative }`
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | `POST` | `/sessions` | GM | Create draft session |
-| `GET` | `/sessions` | Any | List all sessions (paginated) |
+| `GET` | `/sessions` | Any | List sessions (paginated, filterable by status) |
 | `GET` | `/sessions/{id}` | Any | Session detail with participants |
 | `PATCH` | `/sessions/{id}` | GM | Update draft/active session (400 if ended) |
 | `DELETE` | `/sessions/{id}` | GM | Hard-delete draft only (400 if active/ended) |
@@ -114,6 +115,8 @@ Maintain bond body: `{ bond_instance_id, narrative }`
 | `PATCH` | `/sessions/{id}/participants/{character_id}` | Owner/GM | Update contribution (draft only) |
 
 Create body: `{ time_now?, date?, summary?, notes? }`
+
+Filters on GET /sessions: `status?` (`draft`, `active`, `ended`). Unknown values return empty list, not error.
 
 Participant body: `{ character_id, additional_contribution? }`
 
@@ -130,10 +133,13 @@ Participant body: `{ character_id, additional_contribution? }`
 | `DELETE` | `/proposals/{id}` | Owner/GM | Hard-delete pending/rejected only |
 | `POST` | `/proposals/{id}/approve` | GM | Approve with optional overrides |
 | `POST` | `/proposals/{id}/reject` | GM | Reject with optional note |
+| `POST` | `/proposals/calculate` | Player | Dry-run: compute calculated_effect without persisting |
 
 Filters on GET /proposals: `status?`, `character_id?`, `action_type?`
 
 Submit body: `{ character_id, action_type, narrative?, selections? }`
+
+Calculate body: Same as submit body. Returns `{ calculated_effect }` without creating a proposal. Safe to call repeatedly. 422 for validation errors.
 
 Approve body: `{ narrative?, gm_overrides?, rider_event? }`
 
@@ -207,6 +213,7 @@ Filters: `associated_type?`, `associated_id?`, `include_deleted?`
 | `POST` | `/stories/{id}/entries` | Any | Add narrative entry |
 | `PATCH` | `/stories/{id}/entries/{entry_id}` | Owner/GM | Edit entry text |
 | `DELETE` | `/stories/{id}/entries/{entry_id}` | Owner/GM | Soft-delete entry |
+| `GET` | `/stories/{id}/entries` | Any | Paginated entries (cursor-based, oldest-first, default limit 50, max 100) |
 
 ---
 
@@ -276,9 +283,28 @@ Request shape:
 ```json
 {
   "action_type": "modify_character",
-  "targets": [{"type": "character", "id": "..."}],
+  "targets": [{"target_type": "character", "target_id": "...", "is_primary": true}],
   "changes": {"stress": {"op": "delta", "value": 2}},
   "narrative": "optional",
   "visibility": "public"
 }
 ```
+
+Change operations: `delta` (relative offset) and `set` (absolute value) only. See [response-shapes.md](response-shapes.md) GM Action Request Shapes for valid fields per action type.
+
+### Approve Proposal Request
+
+```typescript
+interface ApproveProposalRequest {
+  narrative?: string | null
+  gm_overrides?: Record<string, unknown> | null  // see response-shapes.md GM Override Shapes
+  rider_event?: RiderEventPayload | null          // see response-shapes.md Rider Event Shape
+}
+```
+
+For `resolve_trauma` approval, `gm_overrides` is **required** with `trauma_bond_id`, `trauma_name`, `trauma_description`.
+For `resolve_clock` approval, only `narrative` and optional `rider_event` are needed.
+
+### POST /me/character
+
+Same body as `POST /characters`: `{ name: string, description?: string, notes?: string, attributes?: Record<string, unknown> }`. Creates a **full** (PC) character with all meters/skills/magic_stats defaulting to 0, and links it to the GM's user account. Response is `CharacterResponse` (not detail — no bonds/traits/effects populated).

@@ -1,7 +1,7 @@
 # Traits
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 > Related: [characters.md](characters.md), [../api/contract.md#trait-templates](../api/contract.md#trait-templates)
 
 ## Overview
@@ -49,6 +49,30 @@ The proposal wizard must enforce this constraint in the modifier selection UI.
 - **Proposal Wizard**: Trait selector for modifier (+1d) — separate pickers for core trait and role trait, each showing current charges
 - **GM Actions**: `create_trait`, `modify_trait`, `retire_trait`
 
-## Known Gaps
+---
 
-- Can a trait be recharged when it already has 5 charges? The backend likely returns an error, but confirm behavior.
+## Interrogation Decisions (2026-03-26)
+
+### Recharge Button: Disable at Max
+
+- **Decision**: Disable the "Recharge" button when `charge === CHARGE_MAX (5)`. Grey out with tooltip "Already at full charges".
+- **Rationale**: Prevents wasting 1 FT on a backend error. Clear feedback on why the action is unavailable.
+- **Implications**: Trait list item checks `charge === 5` for button disabled state.
+
+### Past Traits: Collapsed Section
+
+- **Decision**: Past (retired) traits are in a collapsible "Past" section, collapsed by default
+- **Rationale**: Consistent with bonds pattern. Active traits are primary; past traits are history.
+- **Implications**: Character sheet traits section renders `traits.active` by default, with expandable `traits.past` at the bottom.
+
+### Trait Modifier in Proposal Wizard
+
+- **Decision**: Show trait name + inline ChargeDots in the modifier selector. Disabled at 0 charges.
+- **Rationale**: Player instantly sees remaining charges. Consistent visual language with the character sheet.
+- **Implications**: Core trait picker shows up to 2 options, role trait picker up to 3. Each option renders name + ChargeDots. Items with `charge === 0` are greyed out and unselectable.
+
+### Template Name Uniqueness: Warn
+
+- **Decision**: Warn on duplicate template names, but allow creation
+- **Rationale**: Backend allows duplicate names (templates are ULID-keyed). A yellow warning helps the GM catch accidental duplicates without being restrictive.
+- **Implications**: On the GM template creation form, after name input blur, check existing templates for name match and show inline warning if found.

@@ -28,18 +28,18 @@ When a frontend spec requires a backend API change (new endpoint, modified respo
 
 | CR | Title | Priority | Status |
 |----|-------|----------|--------|
-| CR-001 | Proposal dry-run / pre-calculate endpoint | Blocking | Proposed |
-| CR-002 | Document `calculated_effect` shape per action type | Blocking | Proposed |
-| CR-003 | Document `MagicSacrifice` type | Blocking | Proposed |
-| CR-004 | Enumerate `gm_overrides` flags per action type | Blocking | Proposed |
-| CR-005 | Document `resolve_clock` / `resolve_trauma` approval schemas | Blocking | Proposed |
-| CR-006 | Document `POST /me/character` full body shape | Blocking | Proposed |
-| CR-007 | Add `?status=` filter to `GET /sessions` | High | Proposed |
-| CR-008 | Add character name to `SessionResponse.participants[]` | High | Proposed |
-| CR-009 | Paginate story entries or add `GET /stories/{id}/entries` | High | Proposed |
-| CR-010 | Clarify bidirectional bond representation | High | Proposed |
-| CR-011 | Add domain-specific error codes to catalog | Medium | Proposed |
-| CR-012 | Define `InviteResponse` shape for `GET /game/invites` | Medium | Proposed |
+| CR-001 | Proposal dry-run / pre-calculate endpoint | Blocking | **Implemented** (2026-03-27) |
+| CR-002 | Document `calculated_effect` shape per action type | Blocking | **Resolved** (documented 2026-03-26) |
+| CR-003 | Document `MagicSacrifice` type | Blocking | **Resolved** (documented 2026-03-26) |
+| CR-004 | Enumerate `gm_overrides` flags per action type | Blocking | **Resolved** (documented 2026-03-26) |
+| CR-005 | Document `resolve_clock` / `resolve_trauma` approval schemas | Blocking | **Resolved** (documented 2026-03-26) |
+| CR-006 | Document `POST /me/character` full body shape | Blocking | **Resolved** (documented 2026-03-26) |
+| CR-007 | Add `?status=` filter to `GET /sessions` | High | **Implemented** (commit 14994ee, 2026-03-26) |
+| CR-008 | Add character name to `SessionResponse.participants[]` | High | **Implemented** (commit 14994ee, 2026-03-26) |
+| CR-009 | Paginate story entries or add `GET /stories/{id}/entries` | High | **Implemented** (2026-03-27) |
+| CR-010 | Clarify bidirectional bond representation | High | **Resolved** (documented 2026-03-26) |
+| CR-011 | Add domain-specific error codes to catalog | Medium | **Resolved** (documented 2026-03-26) |
+| CR-012 | Define `InviteResponse` shape for `GET /game/invites` | Medium | **Resolved** (documented 2026-03-26) |
 
 ---
 

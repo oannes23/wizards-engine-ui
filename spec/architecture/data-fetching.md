@@ -1,7 +1,7 @@
 # Data Fetching & Cache Strategy
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 > Related: [api-client.md](api-client.md), [../api/contract.md](../api/contract.md)
 
 ## TanStack Query as Primary State Manager
@@ -9,6 +9,8 @@
 All server data flows through TanStack Query v5 hooks. No separate client-side store.
 
 ## Query Key Hierarchy
+
+> **This table is the source of truth** for `src/lib/hooks/query-keys.ts`. The code implements this hierarchy exactly. Key changes are proposed here first.
 
 ```
 ['me']                                    # GET /me
@@ -54,31 +56,31 @@ All server data flows through TanStack Query v5 hooks. No separate client-side s
 | User `/me` | Identity stable during session |
 | Starred objects | Changes only on explicit star/unstar |
 
-### Moderate Cache (staleTime: 30–60s, background refetch)
+### Moderate Cache (background refetch)
 
-| Data | Rationale |
-|------|-----------|
-| Non-current character detail | Changes via GM actions, not frequent |
-| Session list | New sessions created by GM only |
-| Story list/detail | Entries added by any player, moderate frequency |
-| Clock list/detail | Advances only on proposal approval or GM action |
-| Location/group detail | GM-managed, infrequent changes |
+| Data | staleTime | Rationale |
+|------|-----------|-----------|
+| Story list/detail | 30s | Entries added by any player, moderate frequency |
+| Clock list/detail | 30s | Advances only on proposal approval or GM action |
+| Non-current character detail | 60s | Changes via GM actions, not frequent |
+| Session list | 60s | New sessions created by GM only |
+| Location/group detail | 60s | GM-managed, infrequent changes |
 
 ### Active Polling (refetchInterval, pauses when tab hidden)
 
-| Endpoint | View | Interval | Notes |
-|----------|------|----------|-------|
-| `GET /proposals?status=pending` | GM Queue | 10–15s | New proposals arrive during sessions |
-| `GET /gm/dashboard` | GM Queue header | 15–20s | PC summaries, stress alerts |
-| `GET /characters/{id}` (own) | Character Sheet | 15–20s | GM may apply changes |
-| `GET /proposals?character_id=X` | Player Proposals | 15–20s | Status changes |
-| `GET /me/feed` | Player Feed | 20–30s | New events |
-| `GET /characters/{id}/feed` | Character Feed tab | 20–30s | New events |
-| `GET /characters/summary` | GM Dashboard | 15–20s | PC meter changes |
+| Endpoint | View | Normal | Active Session | Notes |
+|----------|------|--------|----------------|-------|
+| `GET /proposals?status=pending` | GM Queue | 10s | 5s | New proposals arrive during sessions |
+| `GET /gm/dashboard` | GM Queue header | 15s | 5s | PC summaries, stress alerts |
+| `GET /characters/{id}` (own) | Character Sheet | 15s | 5s | GM may apply changes |
+| `GET /proposals?character_id=X` | Player Proposals | 15s | 5s | Status changes |
+| `GET /me/feed` | Player Feed | 20s | 5s | New events |
+| `GET /characters/{id}/feed` | Character Feed tab | 20s | 5s | New events |
+| `GET /characters/summary` | GM Dashboard | 15s | 5s | PC meter changes |
 
 All polling uses `refetchIntervalInBackground: false` (TanStack Query default).
 
-Intervals should be shortened when an active session exists (`session.status === 'active'`).
+**Active session boost**: When any session has `status === 'active'`, all polling intervals drop to a fixed **5 seconds**. Detected via `useActiveSession()` hook (see Interrogation Decisions below).
 
 ## Cache Invalidation Ripple Map
 
@@ -111,27 +113,26 @@ Additionally by action_type:
 
 ## Optimistic Updates
 
-### Recommended (low risk, deterministic outcome)
+### Scope: Direct Actions Only
+
+Optimistic updates are limited to non-proposal mutations where the outcome is deterministic and locally computable. All proposal-driven and GM-action-driven changes are server-authoritative — wait for the response and refetch.
+
+### Applied (direct, deterministic)
 
 | Mutation | Optimistic Update |
 |----------|------------------|
 | Star/unstar | Toggle in `['starred']` list |
-| Find time | Decrement plot by 3, increment FT by 1 in character cache |
-| Use effect | Decrement `charges_current` by 1 |
-| Retire effect | Set `is_active = false` |
-| Recharge trait | Set `charge = 5`, decrement FT by 1 |
-| Maintain bond | Set charges to effective max, decrement FT by 1 |
-| Delete pending proposal | Remove from list |
+| Delete pending proposal | Remove from `['proposals', 'list']` |
 
-### Not Recommended (server-authoritative, complex side effects)
+### Not Applied (server-authoritative)
 
 | Mutation | Reason |
 |----------|--------|
 | Approve proposal | Server applies cascading effects |
 | GM actions | 14 action types with arbitrary changes |
-| Session start | FT/Plot distribution formula is server-side |
-| Session end | Plot clamping is server-side |
+| Session start/end | FT/Plot distribution formula is server-side |
 | Submit proposal | Server computes `calculated_effect` |
+| All downtime actions | Go through proposal flow — server is authoritative |
 
 ## Pagination Pattern
 
@@ -141,4 +142,76 @@ Use TanStack Query's `useInfiniteQuery` for all paginated endpoints. The API's `
 getNextPageParam: (lastPage) => lastPage.has_more ? lastPage.next_cursor : undefined
 ```
 
-UI renders a "Load more" button that calls `fetchNextPage()`.
+UI renders a "Load more" button that calls `fetchNextPage()`. No infinite scroll — user controls when to load more.
+
+---
+
+## Interrogation Decisions (2026-03-26)
+
+### Query Key Hierarchy is Source of Truth
+
+- **Decision**: The key hierarchy table in this spec is the authoritative contract for `query-keys.ts`
+- **Rationale**: Keeps the spec and code in sync. Key changes are proposed in the spec first, then implemented.
+- **Implications**: Added note above the hierarchy table
+
+### Pinned Polling Intervals
+
+- **Decision**: Exact values instead of ranges. Normal: 10s/15s/20s tiers. Active session: fixed 5s for all.
+- **Rationale**: Removes implementation ambiguity. Easier to test and debug. Values can be tuned later.
+- **Implications**: Updated polling table above with Normal and Active Session columns
+
+### Active Session Detection: useActiveSession() Hook
+
+- **Decision**: A query-based hook that checks for `status=active` sessions
+- **Rationale**: Works for both GM and player. Lightweight query with aggressive cache (60s staleTime). All polling hooks consume this to determine interval.
+- **Pattern**:
+  ```typescript
+  function useActiveSession() {
+    return useQuery({
+      queryKey: queryKeys.sessions.active,
+      queryFn: () => api.get<PaginatedResponse<Session>>('/sessions', {
+        params: { status: 'active', limit: 1 },
+      }),
+      staleTime: 60_000,
+      select: (data) => data.items[0] ?? null,
+    })
+  }
+
+  // In any polling hook:
+  const { data: activeSession } = useActiveSession()
+  const interval = activeSession ? 5_000 : NORMAL_INTERVAL
+  ```
+- **Implications**: Adds `sessions.active` to query key hierarchy. All polling hooks depend on this.
+
+### Optimistic Updates: Direct Actions Only
+
+- **Decision**: Only apply optimistic updates for star/unstar and delete pending proposal
+- **Rationale**: All other mutations are either proposal-driven (server-authoritative) or GM actions (complex side effects). Keeping the scope narrow avoids rollback complexity for MVP.
+- **Implications**: Reduced the optimistic updates table from 7 items to 2. All proposal-driven changes refetch on mutation success.
+
+### Pagination UX: Load More Button
+
+- **Decision**: "Load more" button, no infinite scroll
+- **Rationale**: User controls when to fetch. Predictable, accessible, no scroll-jank. Works well for feeds where users might want to stop at a certain point.
+- **Implications**: All paginated lists render a "Load more" button when `has_more` is true. Button calls `fetchNextPage()` from `useInfiniteQuery`.
+
+### Pinned Moderate Cache staleTime Values
+
+- **Decision**: 30s for stories/clocks (moderate change frequency), 60s for locations/groups/sessions (low change frequency)
+- **Rationale**: Specific numbers for deterministic implementation and testing
+- **Implications**: Updated moderate cache table above
+
+### Pagination Gaps
+
+- **Decision**: Accept cursor-stale-after-mutation as a known MVP limitation. ULID cursors may skip or duplicate items if entities are inserted/deleted between pages. No deduplication logic.
+- **Rationale**: Acceptable for small-campaign usage. Feed prepend via polling already handles the "new items at top" case.
+
+### Session Polling Transitions
+
+- **Decision**: When active session ends, `useActiveSession()` detects the status change on the next poll cycle and intervals return to normal (10/15/20s) immediately. No transition delay.
+- **Rationale**: The hook reads session status from the query cache. Status change → re-render → new interval values take effect in the same cycle.
+
+### 201 Cache Updates
+
+- **Decision**: Use 201 POST response data to update TanStack Query cache directly (avoiding a refetch). All 201 responses return the full entity in the same shape as the corresponding GET.
+- **Rationale**: Confirmed by backend. Saves a round-trip on every create operation.

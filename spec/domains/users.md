@@ -1,7 +1,7 @@
 # Users
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 > Related: [../architecture/auth.md](../architecture/auth.md), [characters.md](characters.md)
 
 ## Overview
@@ -50,6 +50,22 @@ The profile page shows:
 
 ## UI Responsibilities
 
-- **Profile Page** (`/profile`): Display name edit, starred list, refresh link
+- **Profile Page** (`/profile`): Display name edit, starred feed link, refresh magic link button
 - **GM Players Page** (`/gm/players`): Player roster with login links, invite management
 - **Auth Provider**: Store user identity in React Context for role-based rendering
+
+---
+
+## Interrogation Decisions (2026-03-26)
+
+### Starred Objects: On Feed Page + Profile Link
+
+- **Decision**: Starred game objects appear as a clickable list on the Feed page sidebar/section, alongside the main feed stream. Profile page also links to the starred feed.
+- **Rationale**: The Feed page is the player's home base — surfacing starred objects here keeps important entities one tap away without leaving the primary view.
+- **Implications**: Feed page renders `GET /me/starred` as a compact list of entity links (type icon + name). Profile page retains the starred feed link for chronological activity view. Star/unstar happens on entity detail pages.
+
+### Invite Display: All with Status Badges
+
+- **Decision**: GM invites page shows both consumed and unconsumed invites
+- **Rationale**: Gives GM full visibility into invite history. Consumed invites are greyed out with "Used" badge. Unconsumed invites show copy-link button and delete action.
+- **Implications**: Single list, no tabs. Uses `InviteResponse.is_consumed` for conditional styling. Note: no `consumed_by` field exists — consumed invites don't show which player used them.

@@ -1,7 +1,7 @@
 # Bonds
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 > Related: [characters.md](characters.md), [groups.md](groups.md), [locations.md](locations.md), [../glossary.md](../glossary.md)
 
 ## Overview
@@ -72,6 +72,64 @@ Trauma bonds are permanent scars — they cannot be retired or maintained.
 - **Proposal Wizard**: Bond selector for modifier (+1d) in `use_skill`, `use_magic`, `charge_magic`, `regain_gnosis`, `rest` actions
 - **GM Actions**: `create_bond`, `modify_bond`, `retire_bond` via the GM actions interface
 
-## Known Gaps
+## Bidirectional Bonds (Resolved)
 
-- The `bidirectional` field on bonds: when true, both entities see the bond. Confirm whether the API returns the bond from both entity perspectives or only from the source.
+When `bidirectional: true`:
+- One database record exists (owned by the source)
+- Both characters see the bond in their `bonds` list
+- **Same bond `id`** on both sides — not a duplicate
+- `label` is perspective-normalized (A sees `source_label`, B sees `target_label`)
+- `target_id`/`target_name` always show the "other end"
+- `active_bond_count` on CharacterDetailResponse counts only **outbound** pc_bond slots
+
+**Deduplication**: If aggregating bonds across characters (e.g., relationship graph), deduplicate on `id`.
+
+---
+
+## Interrogation Decisions (2026-03-26)
+
+### Bidirectional Bond Indicator
+
+- **Decision**: Subtle arrow icon — ↔ for bidirectional, → for one-way
+- **Rationale**: Quick visual signal without cluttering. Player can see at a glance which bonds are mutual.
+- **Implications**: Bond list items include a small icon next to the target name
+
+### Maintain Bond: Disable When Full
+
+- **Decision**: Disable "Maintain" button when `charges === effective_charges_max`
+- **Rationale**: Prevents wasting 1 FT on a no-op. Consistent with trait recharge disable pattern.
+- **Implications**: Button checks `charges === effective_charges_max` (from `BondDisplayResponse.effective_charges_max`)
+
+### Trauma Bond Visual Treatment
+
+- **Decision**: Red accent border (#e05545 stress color) + "Trauma" badge. No maintain button.
+- **Rationale**: Trauma bonds are permanent scars — visually distinct and immediately recognizable. Red ties them to the stress meter that triggered the trauma.
+- **Implications**: Bond list item component checks `is_trauma` for conditional styling. Maintain button hidden when `is_trauma === true`.
+
+### Past Bonds: Collapsed Section
+
+- **Decision**: Past (retired) bonds are in a collapsible "Past" section, collapsed by default
+- **Rationale**: Keeps the active bond list clean. Past bonds are historical context, not primary information.
+- **Implications**: Character sheet bonds section renders `bonds.active` by default, with expandable `bonds.past` at the bottom.
+
+### Bond Modifier in Proposal Wizard
+
+- **Decision**: Show all active PC bonds in the modifier selector, disable those with 0 charges
+- **Rationale**: Player sees the full picture and understands why some bonds are unavailable.
+- **Implications**: Selector shows bond name + charge count. Bonds with `charges === 0` are greyed out and unselectable.
+
+### ChargeDots: Display Only
+
+- **Decision**: ChargeDots is always a pure display component — no interactive mode
+- **Rationale**: Recharge and maintain actions use separate dedicated buttons. Keeps ChargeDots simple and avoids touch-target issues on small dots.
+- **Implications**: No `onClick` or `interactive` prop on ChargeDots. GM edit uses MeterChange inputs (numeric +/- or set) for charge modifications via GM actions.
+
+### Bond Click Navigation
+
+- **Decision**: Clicking a bond navigates to the bond target's detail page, regardless of entity type (character → /world/characters/X, group → /world/groups/X, location → /world/locations/X). No bond detail page exists.
+- **Rationale**: Bonds are links between entities, not standalone objects with their own pages.
+
+### Duplicate Bond Uniqueness
+
+- **Decision**: One active bond per (source, target) pair. API rejects duplicate active bonds with 422. Past bonds don't count against uniqueness.
+- **Rationale**: Confirmed by backend. Multiple historical bonds to the same target are fine, but only one active at a time.

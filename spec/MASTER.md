@@ -13,7 +13,11 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 
 **[Deepening Roadmap](DEEPENING_ROADMAP.md)** — Tracks the spec interrogation order and progress.
 
+**[Outstanding Questions](OUTSTANDING_QUESTIONS.md)** — 69 implementation gaps, ambiguities, and edge cases to resolve before writing epics/stories.
+
 **[Backend Change Requests](api/backend-change-requests.md)** — Requested API changes for handoff to the backend agent.
+
+**[Backend Questionnaire](api/BACKEND_QUESTIONNAIRE.md)** — 21 questions + 10 decision verifications sent to the backend team for clarification.
 
 ---
 
@@ -26,6 +30,8 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | Server State | TanStack Query v5 | 95% of state is server-originated; handles caching, polling, invalidation |
 | Client State | React Context (auth only) | Auth identity is the only global client state needed |
 | Forms | React Hook Form + Zod | Handles the complex proposal wizard (12 action types) and GM actions (14 types) |
+| Icons | Lucide React | Tree-shakeable, ~1000 icons, consistent stroke style |
+| Variants | class-variance-authority (cva) | Type-safe variant mapping for Tailwind components |
 | Testing | Vitest + RTL + MSW + Playwright | 4-layer stack: unit, component, integration, E2E |
 | Data Fetching | Client-side only | Cookie auth requires browser context; server components for layout only |
 
@@ -35,31 +41,31 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 
 | Document | Status | Last Verified |
 |----------|--------|---------------|
-| [architecture/overview.md](architecture/overview.md) | Draft | 2026-03-23 |
-| [architecture/auth.md](architecture/auth.md) | Draft | 2026-03-23 |
-| [architecture/routing.md](architecture/routing.md) | Draft | 2026-03-23 |
-| [architecture/api-client.md](architecture/api-client.md) | Draft | 2026-03-23 |
-| [architecture/data-fetching.md](architecture/data-fetching.md) | Draft | 2026-03-23 |
-| [architecture/naming-conventions.md](architecture/naming-conventions.md) | Draft | 2026-03-23 |
-| [domains/characters.md](domains/characters.md) | Draft | 2026-03-23 |
-| [domains/bonds.md](domains/bonds.md) | Draft | 2026-03-23 |
-| [domains/traits.md](domains/traits.md) | Draft | 2026-03-23 |
-| [domains/magic.md](domains/magic.md) | Draft | 2026-03-23 |
-| [domains/proposals.md](domains/proposals.md) | Draft | 2026-03-23 |
-| [domains/sessions.md](domains/sessions.md) | Draft | 2026-03-23 |
-| [domains/groups.md](domains/groups.md) | Draft | 2026-03-23 |
-| [domains/locations.md](domains/locations.md) | Draft | 2026-03-23 |
-| [domains/stories.md](domains/stories.md) | Draft | 2026-03-23 |
-| [domains/events-and-feeds.md](domains/events-and-feeds.md) | Draft | 2026-03-23 |
-| [domains/users.md](domains/users.md) | Draft | 2026-03-23 |
-| [api/contract.md](api/contract.md) | Draft | 2026-03-23 |
-| [api/response-shapes.md](api/response-shapes.md) | Draft | 2026-03-23 |
-| [ui/components.md](ui/components.md) | Draft | 2026-03-23 |
-| [ui/player-views.md](ui/player-views.md) | Draft | 2026-03-23 |
-| [ui/gm-views.md](ui/gm-views.md) | Draft | 2026-03-23 |
-| [ui/design-system.md](ui/design-system.md) | Draft | 2026-03-23 |
-| [testing/strategy.md](testing/strategy.md) | Draft | 2026-03-23 |
-| [glossary.md](glossary.md) | Draft | 2026-03-23 |
+| [architecture/overview.md](architecture/overview.md) | Deepened | 2026-03-26 |
+| [architecture/auth.md](architecture/auth.md) | Deepened | 2026-03-26 |
+| [architecture/routing.md](architecture/routing.md) | Deepened | 2026-03-26 |
+| [architecture/api-client.md](architecture/api-client.md) | Deepened | 2026-03-26 |
+| [architecture/data-fetching.md](architecture/data-fetching.md) | Deepened | 2026-03-26 |
+| [architecture/naming-conventions.md](architecture/naming-conventions.md) | Deepened | 2026-03-26 |
+| [domains/characters.md](domains/characters.md) | Deepened | 2026-03-26 |
+| [domains/bonds.md](domains/bonds.md) | Deepened | 2026-03-26 |
+| [domains/traits.md](domains/traits.md) | Deepened | 2026-03-26 |
+| [domains/magic.md](domains/magic.md) | Deepened | 2026-03-27 |
+| [domains/proposals.md](domains/proposals.md) | Deepened | 2026-03-27 |
+| [domains/sessions.md](domains/sessions.md) | Deepened | 2026-03-27 |
+| [domains/groups.md](domains/groups.md) | Deepened | 2026-03-27 |
+| [domains/locations.md](domains/locations.md) | Deepened | 2026-03-27 |
+| [domains/stories.md](domains/stories.md) | Deepened | 2026-03-27 |
+| [domains/events-and-feeds.md](domains/events-and-feeds.md) | Deepened | 2026-03-27 |
+| [domains/users.md](domains/users.md) | Deepened | 2026-03-26 |
+| [api/contract.md](api/contract.md) | Deepened | 2026-03-26 |
+| [api/response-shapes.md](api/response-shapes.md) | Deepened | 2026-03-26 |
+| [ui/components.md](ui/components.md) | Deepened | 2026-03-27 |
+| [ui/player-views.md](ui/player-views.md) | Deepened | 2026-03-27 |
+| [ui/gm-views.md](ui/gm-views.md) | Deepened | 2026-03-27 |
+| [ui/design-system.md](ui/design-system.md) | Deepened | 2026-03-26 |
+| [testing/strategy.md](testing/strategy.md) | Deepened | 2026-03-27 |
+| [glossary.md](glossary.md) | Deepened | 2026-03-27 |
 
 ---
 

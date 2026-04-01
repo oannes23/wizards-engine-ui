@@ -1,7 +1,7 @@
 # Naming Conventions
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 
 ## Files and Directories
 
@@ -13,17 +13,16 @@
 | Hook files | camelCase with `use` prefix | `useCharacter.ts`, `usePolling.ts` |
 | API service files | camelCase | `characters.ts`, `proposals.ts` |
 | Type files | camelCase | `types.ts` or `proposal.types.ts` |
-| Utility files | camelCase | `formatDate.ts`, `gnosisEquivalent.ts` |
+| Utility files | camelCase, noun-based | `dates.ts`, `meters.ts`, `dice.ts` |
 | Test files | Match source with `.test` suffix | `MeterBar.test.tsx`, `useCharacter.test.ts` |
 
 ## Component Organization
 
 - One component per file. Filename equals the default export name.
-- Shared/reusable components: `src/components/ui/`
-- Route-specific components (used on only one page): co-located under `_components/`
-  ```
-  app/(player)/character/_components/MeterSection.tsx
-  ```
+- Shared/reusable UI primitives: `src/components/ui/`
+- Layout/shell components: `src/components/layout/`
+- All domain components live in `src/features/<name>/components/`
+- **No `_components/` in route directories.** Route pages compose feature exports only.
 
 ## TypeScript Types
 
@@ -114,3 +113,19 @@ type ActionType =
   | 'new_trait' | 'new_bond'
   | 'resolve_clock' | 'resolve_trauma'
 ```
+
+---
+
+## Interrogation Decisions (2026-03-26)
+
+### No Route-Specific Components
+
+- **Decision**: All components live in `features/` or `components/`. No `_components/` directories in `app/` routes.
+- **Rationale**: Flat composition pattern (from architecture overview) means route pages only import feature barrel exports. One place to look for any component.
+- **Implications**: Removed `_components/` convention from Component Organization section above
+
+### Noun-Based Utility File Names
+
+- **Decision**: `lib/utils/` files are named by domain, not by function: `dates.ts`, `meters.ts`, `dice.ts`
+- **Rationale**: Matches overview spec decision. Functions inside are verb-based (`formatDate`, `calculateEffectiveMax`). Fewer files, grouped by concern.
+- **Implications**: Updated file naming table above

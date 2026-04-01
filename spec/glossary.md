@@ -1,5 +1,8 @@
 # Glossary
 
+> Status: Deepened
+> Last verified: 2026-03-27
+
 Canonical terminology for the Wizards Engine UI project. Use these terms consistently across specs, code, and documentation.
 
 ---
@@ -12,7 +15,7 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Charge** — An integer resource (0–5) on a character trait (core/role) or PC bond. Consumed (−1) when invoked as a proposal modifier (+1d). All three trait subtypes share this mechanic: **Core Traits** and **Role Traits** become unusable at 0 charges until recharged (1 FT → back to 5). **Bond Traits** (PC bonds) auto-recharge when hitting 0, but with max charges permanently decreased by 1 (see Degradation).
 
-**Clock** — A Blades-in-the-Dark-style progress tracker with N segments and M filled. Can be standalone or associated with a Game Object. Completion triggers a `resolve_clock` system proposal.
+**Clock** — A progress tracker with N segments and M filled. Can be standalone or associated with a Game Object. Completion triggers a `resolve_clock` system proposal. Rendered as a linear segmented progress bar (ClockBar), not a pie chart.
 
 **Core Trait** — A character trait in one of the 2 core slots. Has charges. Linked to a Trait Template. Provides +1d as modifier, costs 1 charge.
 
@@ -48,7 +51,7 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Proposal** — A player-submitted or system-generated request for a state change, subject to GM approval. The central mechanic of the application. Statuses: `pending`, `approved`, `rejected`.
 
-**Rider Event** — An optional secondary GM action bundled into a proposal approval, applied atomically with the proposal's effects.
+**Rider Event** — An optional secondary event bundled into a proposal approval, applied atomically with the proposal's effects. Structurally a raw event record (type + targets + changes), not a GM action intent. Stored with `parent_event_id` linking to the approval event.
 
 **Role Trait** — A character trait in one of the 3 role slots. Has charges. Linked to a Trait Template.
 
@@ -86,6 +89,10 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **ULID** — Universally Unique Lexicographically Sortable Identifier. The ID format for all entities. Cursor-based pagination relies on lexicographic ordering of ULIDs.
 
+**Style Bonus** — A hidden Gnosis bonus the GM can add via `gm_overrides.style_bonus` when approving magic proposals. Added before the tiered dice conversion. Used to reward creative sacrifice descriptions (`other` type sacrifices have 0 gnosis equivalent by default).
+
+**Tiered Conversion** — The formula converting total gnosis equivalent into sacrifice dice for magic actions. Each successive die costs one more gnosis: 1st die = 1, 2nd = 2, 3rd = 3, etc. So 3 dice costs 6 total (1+2+3), 4 dice costs 10 (1+2+3+4).
+
 ---
 
 ## Frontend Architecture Terms
@@ -99,6 +106,14 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 **Route Group** — A Next.js App Router directory wrapped in parentheses (e.g., `(player)/`) that groups routes under a shared layout without adding to the URL path.
 
 **Sacrifice Builder** — The sub-component within the Proposal Wizard for `use_magic` and `charge_magic` action types. Handles multi-type resource sacrifice selection with gnosis-equivalent calculations.
+
+**Starred** — A player-curated bookmark on a Game Object. Starred objects filter the player's Starred feed tab (`GET /me/feed/starred`). Toggled via star icon (☆/★) on entity cards and detail headers.
+
+**Active Session Boost** — When any session has `status === 'active'`, all polling intervals drop to 5 seconds. Detected via the `useActiveSession()` hook.
+
+**GM Action** — One of 14 server-side operations the GM can execute to modify game state directly (e.g., `modify_character`, `create_bond`, `retire_trait`). Distinct from proposals — GM actions bypass the proposal workflow.
+
+**Entity Link** — A shared UI component that renders a clickable reference to a Game Object (character, group, location, or story) with a type icon. Used throughout the app wherever entities are referenced.
 
 ---
 

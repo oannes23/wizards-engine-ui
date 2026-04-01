@@ -1,7 +1,7 @@
 # Authentication & Authorization
 
-> Status: Draft
-> Last verified: 2026-03-23
+> Status: Deepened
+> Last verified: 2026-03-26
 > Related: [routing.md](routing.md), [api-client.md](api-client.md), [../domains/users.md](../domains/users.md)
 
 ## Auth Model
@@ -105,3 +105,73 @@ The frontend and backend run on different origins. Required backend configuratio
 - `CORS_ORIGINS` must include the frontend's origin (e.g., `http://localhost:3000` for dev)
 - `SameSite=Lax` cookies work when frontend and backend share the same registrable domain (e.g., both on `localhost`)
 - For different domains in production, the backend may need `SameSite=None; Secure` or a reverse proxy to put both on the same origin
+
+---
+
+## Interrogation Decisions (2026-03-26)
+
+### Auth Race Condition: Block Children
+
+- **Decision**: AuthProvider blocks rendering of children while `isLoading` is true
+- **Rationale**: Prevents premature API calls from child components that would 401 before auth resolves. Simple gate — children only mount once auth state is known.
+- **Pattern**:
+  ```tsx
+  function AuthProvider({ children }: { children: React.ReactNode }) {
+    const { data: user, isLoading, error } = useQuery({
+      queryKey: ['auth', 'me'],
+      queryFn: () => api.get<User>('/me'),
+      retry: false,
+    })
+
+    if (isLoading) return <AppLoadingSkeleton />
+    if (error) return <OfflineErrorPage onRetry={() => window.location.reload()} />
+
+    return (
+      <AuthContext.Provider value={{ user: user ?? null, isGm: user?.role === 'gm', ... }}>
+        {children}
+      </AuthContext.Provider>
+    )
+  }
+  ```
+- **Implications**: `AppLoadingSkeleton` is a full-page branded skeleton in `components/layout/`. `OfflineErrorPage` shows logo + "Unable to connect" + retry button.
+
+### GM Routing: Separate Layouts
+
+- **Decision**: Keep `(player)/layout.tsx` and `(gm)/layout.tsx` as distinct layouts with separate role checks
+- **Rationale**: Clean separation. Player layout rejects non-players. GM layout rejects non-GMs. GM accesses character views via `(gm)/character/` route that reuses character feature components (not by navigating to player routes).
+- **Implications**: GM nav and player nav are separate components. GM character page at `(gm)/character/page.tsx` imports the same feature components as `(player)/character/page.tsx` but with GM layout wrapper.
+
+### Login Deep-Link UX: Branded Loading
+
+- **Decision**: Show logo + "Signing in..." during auto-submit, with error fallback
+- **Rationale**: Feels intentional and polished. On slow networks, users see something reassuring. On failure, they get clear error + retry option.
+- **Pattern**:
+  - `/login/[code]/page.tsx` renders branded loading on mount, auto-submits POST to `/auth/login`
+  - Success → redirect based on role (player home or GM dashboard)
+  - Failure → show error message: "This link is invalid or has expired" + link to request a new one
+  - Invite code (empty `{}` response) → redirect to `/join?code=<code>`
+- **Implications**: The loading state uses `AppLoadingSkeleton` (same as AuthProvider loading) for consistency
+
+### Offline / Network Error: Full-Page Error
+
+- **Decision**: Branded full-page error when the initial `/me` call fails due to network error
+- **Rationale**: Nothing works without the backend — a full-page error is honest and clear. No point showing a stale shell.
+- **Pattern**: Logo + "Unable to connect to server" + "Retry" button that reloads the page. No auto-retry loop.
+- **Implications**: `OfflineErrorPage` component in `components/layout/`
+
+### Session Expiry: Redirect + Toast
+
+- **Decision**: On mid-use 401 from any API call, redirect to `/login` with a toast
+- **Rationale**: Clean break — no stale state, no confusing overlay. The magic link model has no refresh flow, so re-auth requires a new magic link.
+- **Pattern**: TanStack Query global `onError` detects 401 → clears auth context → `router.push('/login')` → toast "Session expired — please sign in again"
+- **Implications**: Aligns with the api-client.md decision to handle 401s in TanStack Query's global onError. Toast uses the arch-level toast system.
+
+### Logout
+
+- **Decision**: Frontend clears the cookie client-side for soft logout. "Secure logout" uses `POST /me/refresh-link` to invalidate the code server-side. No dedicated logout endpoint exists yet (CR filed). Login codes: ULID format (26 chars) for initial invites, URL-safe base64 (43 chars) after refresh. Case-sensitive.
+- **Rationale**: Cookie IS the session — clearing it locally is sufficient for most cases. Code rotation provides server-side invalidation.
+
+### Auth Retry
+
+- **Decision**: 3 retries with exponential backoff (1s, 2s, 4s) for `GET /me` on app load. After 3 failures, show full-page error with manual "Retry" button. No infinite loop.
+- **Rationale**: Handles transient network issues without blocking the user indefinitely.
