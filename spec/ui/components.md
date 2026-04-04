@@ -1,6 +1,6 @@
 # Component Catalog
 
-> Status: Partially verified (Phase 0 + Phase 1 + Phase 2 complete)
+> Status: Verified against implementation
 > Last verified: 2026-04-03
 > Related: [design-system.md](design-system.md), [player-views.md](player-views.md), [gm-views.md](gm-views.md)
 
@@ -35,7 +35,7 @@ All Phase 0 primitives are implemented. Status column: **Impl** = implemented, *
 
 Domain-aware components that assemble primitives. In `src/features/*/` directories.
 
-Status: **Impl** = implemented (Phase 0/1/2), **Spec** = spec only.
+Status: **Impl** = implemented, **Spec** = spec only (not built).
 
 | Component | Feature | Status | Description |
 |-----------|---------|--------|-------------|
@@ -70,19 +70,33 @@ Status: **Impl** = implemented (Phase 0/1/2), **Spec** = spec only.
 | **GmQueueSummary** | `proposals/` | Impl | GM queue sidebar — pending count, PC summary cards with mini MeterBars and stress alert icon, near-completion clocks |
 | **GmFeedFilterPanel** | `feeds/` | Impl | Advanced filter controls for GM event feed — item type radio, target type select, actor type select, date range inputs; Reset button when filters active |
 | **SessionTimelineFeed** | `feeds/` | Impl | Session-scoped feed — wraps FeedList with `session_id` filter; polls at 15s/5s active |
-| **GameObjectCard** | `world/` | Spec | Shared card for character/group/location with type icon, name, subtitle, star toggle |
-| **CharacterSummaryRow** | `character/` | Spec | Compact row: name + 4 mini meter bars |
-| **ClockCard** | `clocks/` | Spec | Clock name + ClockBar + progress label |
-| **StoryEntry** | `stories/` | Spec | Single entry: author, text, timestamp, edit/delete for owner. Inline edit mode. |
-| **DicePoolBar** | `proposals/` | Spec | Sticky summary bar with live dice pool calculation + costs + Next button |
-| **DataTable** | shared | Spec | Responsive: sortable table (desktop) / card list (mobile) with column filters |
+| **GameObjectCard** | `world/` | Impl | Polymorphic card for character/group/location/story; type icon, name, type-specific subtitle, star toggle; stories include StatusBadge + tag chips |
+| **CharacterSummaryRow** | `character/` | Spec | Compact row: name + 4 mini meter bars (not built as separate component; dashboard uses PcCard inline) |
+| **ClockCard** | `clocks/` | Impl | Implemented inline in `/gm/clocks` page as `ClockCard` — ClockBar + inline edit/delete; not extracted as a feature component |
+| **StoryEntry** | `world/` | Impl | Single entry with inline edit mode; author, relative timestamp, text; edit/delete buttons for owner. Display and edit state via local toggle. |
+| **SessionCard** | `sessions/` | Impl | Compact card for session list; status badge, summary, date, participant count, player participation indicator |
+| **CreateSessionForm** | `sessions/` | Impl | Inline collapsible form: summary, time_now, date, notes. Collapses on success. |
+| **SessionLifecycleControls** | `sessions/` | Impl | Draft: Start + Delete; Active: End; each with confirmation modal (StartConfirmModal, EndConfirmModal, ConfirmModal) |
+| **ParticipantManagement** | `sessions/` | Impl | GM: add/remove/AddAll, contribution toggle; Player: join/leave self; searchable dropdown; draft/active/ended state-aware |
+| **SessionDetail** | `sessions/` | Impl | Shared session detail component: header, status, notes, lifecycle controls (GM), two tabs (Participants, Timeline) |
+| **ActiveSessionBanner** | `sessions/` | Impl | Persistent teal banner in player layout; shows session name, join/leave button, "All sessions" link; hidden when no active session |
+| **GmActionTypeSelector** | `gm-actions/` | Impl | Grouped `<select>` for 14 GM action types in 5 optgroups (Modify/Bond/Trait/Effect/XP) |
+| **EntityPicker** | `gm-actions/` | Impl | Searchable dropdown for selecting a game object by type (character/group/location/clock) |
+| **ModifyCharacterForm** | `gm-actions/` | Impl | GM action form: delta/set for each meter, narrative, visibility |
+| **ModifyGroupForm** | `gm-actions/` | Impl | GM action form: tier delta/set |
+| **ModifyLocationForm** | `gm-actions/` | Impl | GM action form: parent_id selection |
+| **ModifyClockForm** | `gm-actions/` | Impl | GM action form: progress advancement (set/delta) |
+| **BondForms** | `gm-actions/` | Impl | CreateBondForm, ModifyBondForm, RetireBondForm — all in one file |
+| **TraitForms** | `gm-actions/` | Impl | CreateTraitForm, ModifyTraitForm, RetireTraitForm — all in one file |
+| **EffectForms** | `gm-actions/` | Impl | CreateEffectForm, ModifyEffectForm, RetireEffectForm — all in one file |
+| **AwardXpForm** | `gm-actions/` | Impl | GM action form: character + magic stat selector + XP amount |
+| **DicePoolBar** | `proposals/` | Spec | Sticky summary bar with live dice pool calculation + costs + Next button (not built) |
+| **DataTable** | shared | Spec | Responsive sortable table / card list (not built; admin pages use custom inline tables) |
 | **NavBar** | shared | Impl | Responsive nav with role-specific items; player: 5 items (Feed, Character, Proposals, World, Profile); GM: 5 items (Queue, Feed, World, Sessions, More→/gm/players) |
-| **ActiveSessionBanner** | `sessions/` | Spec | Persistent teal-accented banner for active session state (player: join/leave; GM: link to detail). Moderate prominence — visible but not disruptive. |
 | **GmOverridesForm** | `proposals/` | — | Absorbed into ApproveForm (Options panel + MagicOverridesPanel sub-components) — not a separate file |
 | **RiderEventForm** | `proposals/` | — | Absorbed into ApproveForm as `RiderEventForm` internal component — not a separate file |
-| **ParticipantList** | `sessions/` | Spec | Session participants with add/remove, "Add All", contribution toggle, searchable dropdown |
-| **PresenceTiers** | `locations/` | Spec | Tiered entity list with opacity degradation (100%/70%/50%), empty tier hiding |
-| **BreadcrumbNav** | `locations/` | Spec | Ancestor breadcrumb trail with middle truncation at depth > 3 |
+| **PresenceTiers** | `world/` | Impl | Tiered entity list with opacity degradation (100%/70%/50%); empty tiers hidden; entity names via EntityLink |
+| **BreadcrumbNav** | `world/` | Impl | Ancestor breadcrumb trail with middle truncation at depth > 4; clickable ellipsis to expand full path |
 
 ## Page-Level Components
 
@@ -175,5 +189,5 @@ Primitives should be built first (Epic 0.1), as they are used across all feature
 2. **[Complete]** MeterHeader, TraitItem, TraitsSection, BondItem, BondsSection, MagicEffectItem, MagicEffectsSection, SkillGrid, MagicStatGrid, CharacterTabs (Phase 1 — Epic 1.2)
 3. **[Complete]** FeedItem, EventCard, StoryEntryCard, FeedList, MyStoriesSidebar, StarToggle (connected), PlayerFeedPage (Phase 1 — Epic 2.3 Batch H)
 4. **[Complete]** ActionTypeBadge, ProposalCard, ProposalFilterChips, ActionTypeSelector, WizardProvider, WizardStep2, ReviewStep, SacrificeBuilder, ModifierSelector, CalculatedEffectCard, ApproveForm, RejectForm, GmProposalReviewCard, GmQueueSummary, GmFeedFilterPanel, SessionTimelineFeed (Phase 2 — Epics 2.1, 2.2, 2.3 Batch N)
-5. CharacterSummaryRow, ActiveSessionBanner, DicePoolBar (Phase 2 remaining — not yet implemented)
-6. GameObjectCard, DataTable, PresenceTiers, BreadcrumbNav, ParticipantList (Phase 3 — World Browser & Sessions)
+5. **[Complete]** GameObjectCard, PresenceTiers, BreadcrumbNav, StoryEntry, SessionCard, CreateSessionForm, SessionLifecycleControls, ParticipantManagement, SessionDetail, ActiveSessionBanner, GmActionTypeSelector, EntityPicker, ModifyCharacterForm, ModifyGroupForm, ModifyLocationForm, ModifyClockForm, BondForms, TraitForms, EffectForms, AwardXpForm (Phase 3 — Epics 3.1, 3.2, 3.3, 3.4)
+6. DicePoolBar, DataTable, CharacterSummaryRow — not built (not required for MVP; CharacterSummaryRow functionality covered by inline PcCard in dashboard)

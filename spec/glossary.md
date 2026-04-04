@@ -1,7 +1,7 @@
 # Glossary
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 
 Canonical terminology for the Wizards Engine UI project. Use these terms consistently across specs, code, and documentation.
 
@@ -115,7 +115,9 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Active Session Boost** — When any session has `status === 'active'`, all polling intervals drop to 5 seconds. Detected via the `useActiveSession()` hook.
 
-**GM Action** — One of 14 server-side operations the GM can execute to modify game state directly (e.g., `modify_character`, `create_bond`, `retire_trait`). Distinct from proposals — GM actions bypass the proposal workflow.
+**GM Action** — One of 14 server-side operations the GM can execute to modify game state directly (e.g., `modify_character`, `create_bond`, `retire_trait`). Distinct from proposals — GM actions bypass the proposal workflow. Actions are organized into 5 groups: Modify (4), Bond (3), Trait (3), Effect (3), XP (1).
+
+**Batch Mode** — An execution mode on the GM Actions page (`/actions`) that lets the GM queue multiple GM Actions and execute them atomically in a single API call (`POST /gm/actions/batch`). Contrasts with Single Mode, which executes one action immediately.
 
 **Entity Link** — A shared UI component that renders a clickable reference to a Game Object (character, group, location, or story) with a type icon. Used throughout the app wherever entities are referenced.
 

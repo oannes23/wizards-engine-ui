@@ -1,7 +1,7 @@
 # Locations
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [bonds.md](bonds.md), [../api/contract.md#locations](../api/contract.md#locations)
 
 ## Overview
@@ -76,6 +76,8 @@ Character presence at locations is probabilistic, not declarative. The UI must u
 - **Decision**: If the ancestor path exceeds 3 levels, show the root, ellipsis, and the last 2 levels. Clicking the ellipsis expands to show the full path.
 - **Rationale**: Deep nesting is rare but possible. Truncation prevents the breadcrumb from dominating the header on mobile. Expandable ellipsis gives access to the full path when needed.
 - **Implications**: Breadcrumb component needs expand/collapse state. Ancestor chain must be fully resolved regardless of display truncation.
+
+> Implementation note (2026-04-03): The built `BreadcrumbNav` truncates when total depth (ancestors + current) exceeds 4 (not 3). This gives one more level before truncation kicks in, which is slightly more permissive than the spec. Truncated display shows first ancestor, ellipsis, last 2 ancestors, then current.
 
 ---
 

@@ -37,10 +37,7 @@ export function CreateTraitForm({ state, onChange }: CreateTraitFormProps) {
     { value: "core_trait", label: "Core Trait (Character)" },
     { value: "role_trait", label: "Role Trait (Character)" },
     { value: "group_trait", label: "Group Trait" },
-    { value: "group_relation", label: "Group Relation" },
-    { value: "group_holding", label: "Group Holding" },
     { value: "feature_trait", label: "Feature Trait (Location)" },
-    { value: "location_bond", label: "Location Bond" },
   ];
 
   return (

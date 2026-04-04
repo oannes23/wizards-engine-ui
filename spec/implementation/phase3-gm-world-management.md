@@ -1,8 +1,9 @@
 # Epic 3.2 — GM World Management & Actions
 
 > Phase: 3
-> Status: Not Started
+> Status: Complete
 > Depends on: Epic 3.1
+> Last verified: 2026-04-03
 
 ## Goal
 

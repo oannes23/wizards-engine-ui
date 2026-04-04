@@ -1,7 +1,7 @@
 # Sessions
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [characters.md](characters.md), [../api/contract.md#sessions](../api/contract.md#sessions)
 
 ## Overview
@@ -95,11 +95,15 @@ Players can add/remove themselves (Owner auth). GM can manage all participants.
 - **Rationale**: Starting a session has irreversible mechanical consequences (resource distribution). Showing current meter values helps the GM catch issues (e.g., a character already at max FT).
 - **Implications**: Modal needs to fetch current character meter data for all participants. The `time_now` delta is computed client-side from `time_now - participant.last_session_time_now`.
 
+> Implementation note (2026-04-03): The built `StartConfirmModal` shows participant count, `time_now`, and distribution rules (FT from delta, Plot +1/+2), but does not load per-participant current meter values. Start is blocked when participant count is 0 but not blocked by meter state. The per-participant FT/Plot preview was deferred as a simplification.
+
 ### End Session Confirmation: Warn If Lossy
 
 - **Decision**: Simple confirm dialog. If any participant has Plot > 5, show a warning listing who will lose Plot and by how much (e.g., "Maren: 7 → 5 (-2)"). Otherwise, just "End session?".
 - **Rationale**: Plot clamping is usually a no-op (Plot rarely exceeds 5). Only warn when there's actual data loss.
 - **Implications**: Modal needs to check current Plot values of participants. Can reuse participant data already loaded on the detail page.
+
+> Implementation note (2026-04-03): The built `EndConfirmModal` shows a generic "Plot will be clamped to N" warning for all sessions rather than a conditional per-participant lossy check. Participant meter data is not loaded on the session detail page, so the granular warning was not implemented.
 
 ### Add Participant: Searchable Dropdown + Add All
 

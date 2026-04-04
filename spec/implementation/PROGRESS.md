@@ -77,38 +77,38 @@ Living tracker updated as stories are completed. See [ORCHESTRATION.md](ORCHESTR
 
 | Story | Title | Batch | Agent | Status | Notes |
 |-------|-------|-------|-------|--------|-------|
-| 3.1.1 | World browser page | O | frontend-dev | Not Started | |
-| 3.1.2 | GameObjectCard | O | frontend-dev | Not Started | |
-| 3.1.8 | Search & filter controls | O | frontend-dev | Not Started | |
-| 3.1.3 | Character list + detail | P | frontend-dev | Not Started | |
-| 3.1.4 | Group list + detail | P | frontend-dev | Not Started | |
-| 3.1.5 | Location list + detail | P | frontend-dev | Not Started | |
-| 3.1.6 | Story list + detail | P | frontend-dev | Not Started | Apply D3: owner name resolution |
-| 3.1.7 | Story entry CRUD | P | frontend-dev | Not Started | |
-| 3.2.1 | Create character form | Q | frontend-dev | Not Started | |
-| 3.2.2 | Create group form | Q | frontend-dev | Not Started | |
-| 3.2.3 | Create location form | Q | frontend-dev | Not Started | |
-| 3.2.4 | Edit game object forms | Q | frontend-dev | Not Started | |
-| 3.2.5 | GM action type selector | R | frontend-dev | Not Started | Apply D4: discriminated schemas |
-| 3.2.6 | GM modify actions | R | frontend-dev | Not Started | |
-| 3.2.7 | GM bond CRUD actions | R | frontend-dev | Not Started | |
-| 3.2.8 | GM trait + effect actions | R | frontend-dev | Not Started | |
-| — | Inline-3: GM actions review | — | architect, game-designer, code-reviewer | Not Started | After R |
-| 3.2.9 | Clock management | S | frontend-dev | Not Started | |
-| 3.2.10 | Trait template CRUD | S | frontend-dev | Not Started | |
-| — | QA-6: World & GM tests | — | qa-engineer | Not Started | After P+S |
-| 3.3.1 | Session list page | T | frontend-dev | Not Started | Parallel with O–S |
-| 3.3.2 | Create session form | T | frontend-dev | Not Started | |
-| 3.3.3 | Session detail page | T | frontend-dev | Not Started | |
-| 3.3.4 | Lifecycle controls | T | frontend-dev | Not Started | |
-| 3.3.5 | Participant management | T | frontend-dev | Not Started | |
-| 3.3.6 | GM dashboard | T | frontend-dev | Not Started | |
-| 3.4.1 | Players roster | U | frontend-dev | Not Started | Apply D2: is_active field |
-| 3.4.2 | Invite management | U | frontend-dev | Not Started | |
-| 3.4.3 | Token regeneration | U | frontend-dev | Not Started | |
-| 3.4.4 | GM character creation | U | frontend-dev | Not Started | |
-| — | QA-7: Session & player tests | — | qa-engineer | Not Started | After T+U |
-| — | GATE-3 + TW-4 | — | all reviewers | Not Started | After QA-6, QA-7 |
+| 3.1.1 | World browser page | O | frontend-dev | Complete | 4-tab page at /world: Characters, Groups, Locations, Stories |
+| 3.1.2 | GameObjectCard | O | frontend-dev | Complete | Polymorphic card with type icon; stories include StatusBadge + tags |
+| 3.1.8 | Search & filter controls | O | frontend-dev | Complete | Debounced name search + sort controls per tab |
+| 3.1.3 | Character list + detail | P | frontend-dev | Complete | Read-only character detail; PC/NPC view with bonds, traits, magic |
+| 3.1.4 | Group list + detail | P | frontend-dev | Complete | Group detail with members, traits (Relations/Holdings), clocks, feed |
+| 3.1.5 | Location list + detail | P | frontend-dev | Complete | Location detail with BreadcrumbNav, PresenceTiers, sub-locations, feed |
+| 3.1.6 | Story list + detail | P | frontend-dev | Complete | Story detail with sub-arcs, always-visible entry input, reverse-chron entries |
+| 3.1.7 | Story entry CRUD | P | frontend-dev | Complete | Add entry, inline edit (StoryEntry), delete with ConfirmModal |
+| 3.2.1 | Create character form | Q | frontend-dev | Complete | /gm/world/characters/new — simplified NPC creation |
+| 3.2.2 | Create group form | Q | frontend-dev | Complete | /gm/world/groups/new |
+| 3.2.3 | Create location form | Q | frontend-dev | Complete | /gm/world/locations/new with parent_id picker |
+| 3.2.4 | Edit game object forms | Q | frontend-dev | Complete | /gm/world/{type}/[id]/edit — name, description, notes via PATCH |
+| 3.2.5 | GM action type selector | R | frontend-dev | Complete | GmActionTypeSelector dropdown; 14 types in 5 optgroups; single + batch mode |
+| 3.2.6 | GM modify actions | R | frontend-dev | Complete | ModifyCharacterForm, ModifyGroupForm, ModifyLocationForm, ModifyClockForm |
+| 3.2.7 | GM bond CRUD actions | R | frontend-dev | Complete | BondForms: CreateBondForm, ModifyBondForm, RetireBondForm |
+| 3.2.8 | GM trait + effect actions | R | frontend-dev | Complete | TraitForms (create/modify/retire), EffectForms (create/modify/retire), AwardXpForm |
+| — | Inline-3: GM actions review | — | architect, game-designer, code-reviewer | Complete | |
+| 3.2.9 | Clock management | S | frontend-dev | Complete | /gm/clocks — grid with filter tabs, inline create/edit, near-completion highlight |
+| 3.2.10 | Trait template CRUD | S | frontend-dev | Complete | /gm/templates — table view, inline create/edit, soft-delete |
+| — | QA-6: World & GM tests | — | qa-engineer | In Progress | GameObjectCard, SessionLifecycleControls, GmActionsPage, GmClocksPage, GmPlayersPage, GmSessionsPage tests present |
+| 3.3.1 | Session list page | T | frontend-dev | Complete | Separate GM (/gm/sessions) and player (/sessions) pages; status-sectioned GM list |
+| 3.3.2 | Create session form | T | frontend-dev | Complete | CreateSessionForm — inline collapsible; summary, time_now, date, notes |
+| 3.3.3 | Session detail page | T | frontend-dev | Complete | SessionDetail shared component at /sessions/[id] and /gm/sessions/[id] |
+| 3.3.4 | Lifecycle controls | T | frontend-dev | Complete | SessionLifecycleControls — Start/End/Delete with confirmation modals |
+| 3.3.5 | Participant management | T | frontend-dev | Complete | ParticipantManagement — add/remove/AddAll, contribution toggle, search dropdown |
+| 3.3.6 | GM dashboard | T | frontend-dev | Complete | /gm/dashboard — active session card, pending count, PC meter cards, near-completion clocks |
+| 3.4.1 | Players roster | U | frontend-dev | Complete | GmPlayersPage — display_name, role badge, is_active badge, login URL + copy, regen link |
+| 3.4.2 | Invite management | U | frontend-dev | Complete | InvitesSection — generate (player/viewer), list with consumed badge, copy + delete |
+| 3.4.3 | Token regeneration | U | frontend-dev | Complete | Regenerate button per player with ConfirmModal; new URL displayed |
+| 3.4.4 | GM character creation | U | frontend-dev | Complete | /gm/character — shows create form if no linked character |
+| — | QA-7: Session & player tests | — | qa-engineer | In Progress | SessionLifecycleControls test present; GmPlayersPage, GmSessionsPage tests present |
+| — | GATE-3 + TW-4 | — | all reviewers | In Progress | TW-4 tasks: this update |
 
 ## Final Phase
 

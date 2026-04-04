@@ -56,20 +56,20 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | [domains/traits.md](domains/traits.md) | Verified against implementation | 2026-04-03 |
 | [domains/magic.md](domains/magic.md) | Verified against implementation | 2026-04-03 |
 | [domains/proposals.md](domains/proposals.md) | Verified against implementation | 2026-04-03 |
-| [domains/sessions.md](domains/sessions.md) | Deepened | 2026-03-27 |
-| [domains/groups.md](domains/groups.md) | Deepened | 2026-03-27 |
-| [domains/locations.md](domains/locations.md) | Deepened | 2026-03-27 |
-| [domains/stories.md](domains/stories.md) | Deepened | 2026-03-27 |
+| [domains/sessions.md](domains/sessions.md) | Verified against implementation | 2026-04-03 |
+| [domains/groups.md](domains/groups.md) | Verified against implementation | 2026-04-03 |
+| [domains/locations.md](domains/locations.md) | Verified against implementation | 2026-04-03 |
+| [domains/stories.md](domains/stories.md) | Verified against implementation | 2026-04-03 |
 | [domains/events-and-feeds.md](domains/events-and-feeds.md) | Verified against implementation | 2026-04-03 |
 | [domains/users.md](domains/users.md) | Verified against implementation | 2026-04-03 |
 | [api/contract.md](api/contract.md) | Deepened | 2026-03-26 |
 | [api/response-shapes.md](api/response-shapes.md) | Deepened | 2026-03-26 |
-| [ui/components.md](ui/components.md) | Partially verified (Phase 0+1+2) | 2026-04-03 |
+| [ui/components.md](ui/components.md) | Verified against implementation | 2026-04-03 |
 | [ui/player-views.md](ui/player-views.md) | Deepened | 2026-03-27 |
 | [ui/gm-views.md](ui/gm-views.md) | Deepened | 2026-03-27 |
 | [ui/design-system.md](ui/design-system.md) | Deepened | 2026-03-26 |
 | [testing/strategy.md](testing/strategy.md) | Deepened | 2026-03-27 |
-| [glossary.md](glossary.md) | Deepened | 2026-03-27 |
+| [glossary.md](glossary.md) | Verified against implementation | 2026-04-03 |
 
 ---
 
@@ -83,7 +83,7 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | 2 | [2.1 Proposals](implementation/phase2-proposals.md) | Complete | 1.1, 1.2 |
 | 2 | [2.2 GM Queue](implementation/phase2-gm-queue.md) | Complete | 2.1 |
 | 2 | [2.3 Feeds & Events](implementation/phase2-feeds.md) | Complete (Batch H + Batch N done) | 0.1 |
-| 3 | [3.1 World Browser](implementation/phase3-world-browser.md) | Not Started | 1.2 |
-| 3 | [3.2 GM World Management](implementation/phase3-gm-world-management.md) | Not Started | 3.1 |
-| 3 | [3.3 Sessions](implementation/phase3-sessions.md) | Not Started | 1.2 |
-| 3 | [3.4 Players & Invites](implementation/phase3-players-invites.md) | Not Started | 1.1 |
+| 3 | [3.1 World Browser](implementation/phase3-world-browser.md) | Complete | 1.2 |
+| 3 | [3.2 GM World Management](implementation/phase3-gm-world-management.md) | Complete | 3.1 |
+| 3 | [3.3 Sessions](implementation/phase3-sessions.md) | Complete | 1.2 |
+| 3 | [3.4 Players & Invites](implementation/phase3-players-invites.md) | Complete | 1.1 |

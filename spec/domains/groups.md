@@ -1,7 +1,7 @@
 # Groups
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [bonds.md](bonds.md), [../api/contract.md#groups](../api/contract.md#groups)
 
 ## Overview

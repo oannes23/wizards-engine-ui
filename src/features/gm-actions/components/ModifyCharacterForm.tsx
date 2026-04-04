@@ -162,7 +162,7 @@ export function buildModifyCharacterRequest(
 
   const changes: Record<string, MeterChange> = {};
   for (const [key, change] of Object.entries(state.meters)) {
-    if (change && change.value !== 0) {
+    if (change && (change.op === "set" || change.value !== 0)) {
       changes[key] = change;
     }
   }

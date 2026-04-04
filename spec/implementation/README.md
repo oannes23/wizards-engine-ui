@@ -50,10 +50,10 @@ The longest sequential chain for the core gameplay loop:
 | 2 | [2.1 Proposals](phase2-proposals.md) | 8–10 | **Critical** | Complete |
 | 2 | [2.2 GM Queue](phase2-gm-queue.md) | 5–6 | Medium | Complete |
 | 2 | [2.3 Feeds & Events](phase2-feeds.md) | 6–7 | Low | Complete |
-| 3 | [3.1 World Browser](phase3-world-browser.md) | 7–8 | Low | Not Started |
-| 3 | [3.2 GM World Management](phase3-gm-world-management.md) | 8–10 | High | Not Started |
-| 3 | [3.3 Sessions](phase3-sessions.md) | 5–6 | Medium | Not Started |
-| 3 | [3.4 Players & Invites](phase3-players-invites.md) | 3–4 | Low | Not Started |
+| 3 | [3.1 World Browser](phase3-world-browser.md) | 7–8 | Low | Complete |
+| 3 | [3.2 GM World Management](phase3-gm-world-management.md) | 8–10 | High | Complete |
+| 3 | [3.3 Sessions](phase3-sessions.md) | 5–6 | Medium | Complete |
+| 3 | [3.4 Players & Invites](phase3-players-invites.md) | 3–4 | Low | Complete |
 
 **Total: 60–74 estimated stories**
 

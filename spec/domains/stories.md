@@ -1,7 +1,7 @@
 # Stories
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [events-and-feeds.md](events-and-feeds.md), [../api/contract.md#stories](../api/contract.md#stories)
 
 ## Overview

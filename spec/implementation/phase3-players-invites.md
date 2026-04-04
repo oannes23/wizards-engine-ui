@@ -1,8 +1,9 @@
 # Epic 3.4 — Player & Invite Management
 
 > Phase: 3
-> Status: Not Started
+> Status: Complete
 > Depends on: Epic 1.1
+> Last verified: 2026-04-03
 
 ## Goal
 

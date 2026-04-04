@@ -127,7 +127,7 @@ export function buildModifyClockRequest(
   const change: MeterChange = { op: state.op, value: state.value };
   return {
     action_type: "modify_clock",
-    targets: [{ target_type: "character", target_id: state.clock_id, is_primary: true }],
+    targets: [],
     changes: { progress: change, clock_id: state.clock_id },
     narrative: state.narrative || undefined,
     visibility: "bonded",
