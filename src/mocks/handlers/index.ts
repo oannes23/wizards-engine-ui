@@ -5,6 +5,8 @@ import { feedHandlers } from "./feeds";
 import { characterHandlers } from "./characters";
 import { proposalHandlers } from "./proposals";
 import { gmHandlers } from "./gm";
+import { sessionHandlers } from "./sessions";
+import { worldHandlers } from "./world";
 
 export const handlers: RequestHandler[] = [
   ...authHandlers,
@@ -13,4 +15,6 @@ export const handlers: RequestHandler[] = [
   ...characterHandlers,
   ...proposalHandlers,
   ...gmHandlers,
+  ...sessionHandlers,
+  ...worldHandlers,
 ];

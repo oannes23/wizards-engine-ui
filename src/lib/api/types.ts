@@ -171,6 +171,8 @@ export interface UserResponse {
   role: UserRole;
   character_id: string | null;
   login_url?: string;
+  /** Discrepancy D2: backend returns is_active on PlayerResponse */
+  is_active?: boolean;
 }
 
 export interface MeResponse extends UserResponse {

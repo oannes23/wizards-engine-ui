@@ -14,6 +14,7 @@ import {
   Globe,
   UserCircle,
 } from "lucide-react";
+import { ActiveSessionBanner } from "@/features/sessions/components/ActiveSessionBanner";
 
 // ── Nav items with live badge ─────────────────────────────────────
 
@@ -72,6 +73,7 @@ function PlayerLayoutInner({ children }: { children: ReactNode }) {
   return (
     <>
       <NavBar items={navItems} role="player" />
+      <ActiveSessionBanner playerCharacterId={user?.character_id} />
       <main className="pb-20 md:pb-0 md:pt-0">
         {children}
       </main>
