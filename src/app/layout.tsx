@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Crimson_Pro } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { MSWProvider } from "@/components/MSWProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${crimsonPro.variable}`}>
       <body className="min-h-screen bg-bg-page text-text-primary font-body antialiased">
-        <Providers>{children}</Providers>
+        <MSWProvider>
+          <Providers>{children}</Providers>
+        </MSWProvider>
       </body>
     </html>
   );

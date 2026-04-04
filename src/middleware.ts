@@ -31,7 +31,9 @@ export function middleware(request: NextRequest) {
 
   // Check for auth cookie
   const loginCode = request.cookies.get("login_code");
-  if (!loginCode) {
+  // Allow E2E test sessions that set a bypass cookie
+  const e2eBypass = request.cookies.get("e2e_auth_bypass");
+  if (!loginCode && !e2eBypass) {
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
   }

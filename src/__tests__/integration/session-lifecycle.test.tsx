@@ -47,7 +47,7 @@ import {
 import { SessionLifecycleControls } from "@/features/sessions/components/SessionLifecycleControls";
 import { ParticipantManagement } from "@/features/sessions/components/ParticipantManagement";
 import { makeCharacter } from "@/mocks/fixtures/characters";
-import GmSessionsPage from "@/app/(gm)/sessions/page";
+import GmSessionsPage from "@/app/(gm)/gm/sessions/page";
 import type { SessionResponse } from "@/lib/api/types";
 
 const API_BASE = "http://localhost:8000/api/v1";
