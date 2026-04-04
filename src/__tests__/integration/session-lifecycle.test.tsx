@@ -45,6 +45,8 @@ import {
   deleteNonDraftHandler,
 } from "@/mocks/handlers/sessions";
 import { SessionLifecycleControls } from "@/features/sessions/components/SessionLifecycleControls";
+import { ParticipantManagement } from "@/features/sessions/components/ParticipantManagement";
+import { makeCharacter } from "@/mocks/fixtures/characters";
 import GmSessionsPage from "@/app/(gm)/sessions/page";
 import type { SessionResponse } from "@/lib/api/types";
 
@@ -313,9 +315,6 @@ describe("session-lifecycle: hard-delete draft-only constraint", () => {
 
 describe("session-lifecycle: contribution toggle disabled after start", () => {
   it("toggle is enabled for draft participants", () => {
-    const { ParticipantManagement } = require("@/features/sessions/components/ParticipantManagement");
-    const { makeCharacter } = require("@/mocks/fixtures/characters");
-
     const session = makeSession({
       status: "draft",
       participants: [
@@ -340,8 +339,6 @@ describe("session-lifecycle: contribution toggle disabled after start", () => {
   });
 
   it("toggle is disabled for active session participants", () => {
-    const { ParticipantManagement } = require("@/features/sessions/components/ParticipantManagement");
-
     const session = makeActiveSession({
       participants: [
         makeParticipant({ character_id: "char-a", character_name: "Kael" }),

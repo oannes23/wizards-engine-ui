@@ -4,11 +4,10 @@
  * Covers:
  * - World browser page tabs (Characters, Groups, Locations, Stories)
  * - Tab switching loads correct content
- * - Search filtering within tabs
  * - Empty and error states for each tab
  * - Group detail page: name, tier, members, traits, bonds
  * - Location detail page: name, presence tiers, breadcrumb, traits
- * - CRUD integration: GM create group → POST /groups → success toast
+ * - CRUD integration: GM create group → POST /groups → success toast + redirect
  */
 
 import {
@@ -18,10 +17,12 @@ import {
   beforeAll,
   afterAll,
   afterEach,
+  beforeEach,
   vi,
 } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
+import { useParams, useRouter } from "next/navigation";
 import { server } from "@/mocks/node";
 import { TestProviders } from "@/mocks/TestProviders";
 import { makeGroup, makeLocation, makeStory } from "@/mocks/fixtures/world";
@@ -38,11 +39,13 @@ const LOCATION_ID = "01LOC_DEFAULT0000000000";
 
 // ── Navigation mocks ───────────────────────────────────────────────
 
+const mockPush = vi.fn();
+
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
-  usePathname: () => "/world",
+  useRouter: vi.fn(() => ({ push: mockPush, replace: vi.fn() })),
+  usePathname: vi.fn(() => "/world"),
   useParams: vi.fn(() => ({ id: GROUP_ID })),
-  useSearchParams: () => ({ get: () => null }),
+  useSearchParams: vi.fn(() => ({ get: () => null })),
 }));
 
 // ── Auth mock (player by default) ────────────────────────────────
@@ -67,7 +70,12 @@ vi.mock("@/lib/auth/useAuth", () => ({
 }));
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  vi.mocked(useParams).mockReturnValue({ id: GROUP_ID });
+  vi.mocked(useRouter).mockReturnValue({ push: mockPush, replace: vi.fn() } as ReturnType<typeof useRouter>);
+  mockPush.mockClear();
+});
 afterAll(() => server.close());
 
 // ── Default handlers ───────────────────────────────────────────────
@@ -91,7 +99,6 @@ function setupWorldHandlers() {
     http.get(`${API_BASE}/stories`, () =>
       HttpResponse.json(paginatedList([makeStory()]))
     ),
-    // Active session check
     http.get(`${API_BASE}/sessions`, () =>
       HttpResponse.json(paginatedList([]))
     )
@@ -99,6 +106,7 @@ function setupWorldHandlers() {
 }
 
 function renderWorldBrowser() {
+  vi.mocked(useParams).mockReturnValue({});
   return render(
     <TestProviders>
       <WorldBrowserPage />
@@ -185,7 +193,7 @@ describe("world-browser: Groups tab", () => {
     expect(screen.getByText(/tier 3/i)).toBeInTheDocument();
   });
 
-  it("shows empty state for groups when none", async () => {
+  it("shows empty state for groups when none exist", async () => {
     server.use(
       http.get(`${API_BASE}/groups`, () =>
         HttpResponse.json(paginatedList([]))
@@ -234,9 +242,8 @@ describe("world-browser: Stories tab", () => {
 // ── Group Detail Page ──────────────────────────────────────────────
 
 describe("world-browser: group detail page", () => {
-  function renderGroupDetail() {
-    const { useParams } = require("next/navigation");
-    useParams.mockReturnValue({ id: GROUP_ID });
+  beforeEach(() => {
+    vi.mocked(useParams).mockReturnValue({ id: GROUP_ID });
     server.use(
       http.get(`${API_BASE}/groups/${GROUP_ID}`, () =>
         HttpResponse.json(makeGroup({ id: GROUP_ID }))
@@ -248,7 +255,9 @@ describe("world-browser: group detail page", () => {
         HttpResponse.json(paginatedList([]))
       )
     );
+  });
 
+  function renderGroupDetail() {
     return render(
       <TestProviders>
         <GroupDetailPage />
@@ -288,8 +297,7 @@ describe("world-browser: group detail page", () => {
   });
 
   it("shows error state when group not found", async () => {
-    const { useParams } = require("next/navigation");
-    useParams.mockReturnValue({ id: "nonexistent" });
+    vi.mocked(useParams).mockReturnValue({ id: "nonexistent" });
     server.use(
       http.get(`${API_BASE}/groups/nonexistent`, () =>
         HttpResponse.json(
@@ -298,9 +306,6 @@ describe("world-browser: group detail page", () => {
         )
       ),
       http.get(`${API_BASE}/groups/nonexistent/feed`, () =>
-        HttpResponse.json(paginatedList([]))
-      ),
-      http.get(`${API_BASE}/sessions`, () =>
         HttpResponse.json(paginatedList([]))
       )
     );
@@ -318,24 +323,25 @@ describe("world-browser: group detail page", () => {
 // ── Location Detail Page ───────────────────────────────────────────
 
 describe("world-browser: location detail page", () => {
-  function renderLocationDetail(id = LOCATION_ID) {
-    const { useParams } = require("next/navigation");
-    useParams.mockReturnValue({ id });
+  beforeEach(() => {
+    vi.mocked(useParams).mockReturnValue({ id: LOCATION_ID });
     server.use(
-      http.get(`${API_BASE}/locations/${id}`, () =>
-        HttpResponse.json(makeLocation({ id }))
+      http.get(`${API_BASE}/locations/${LOCATION_ID}`, () =>
+        HttpResponse.json(makeLocation({ id: LOCATION_ID }))
       ),
       http.get(`${API_BASE}/locations`, () =>
-        HttpResponse.json(paginatedList([makeLocation({ id })]))
+        HttpResponse.json(paginatedList([makeLocation({ id: LOCATION_ID })]))
       ),
-      http.get(`${API_BASE}/locations/${id}/feed`, () =>
+      http.get(`${API_BASE}/locations/${LOCATION_ID}/feed`, () =>
         HttpResponse.json(paginatedList([]))
       ),
       http.get(`${API_BASE}/sessions`, () =>
         HttpResponse.json(paginatedList([]))
       )
     );
+  });
 
+  function renderLocationDetail() {
     return render(
       <TestProviders>
         <LocationDetailPage />
@@ -376,8 +382,7 @@ describe("world-browser: location detail page", () => {
   });
 
   it("shows error state when location not found", async () => {
-    const { useParams } = require("next/navigation");
-    useParams.mockReturnValue({ id: "nonexistent" });
+    vi.mocked(useParams).mockReturnValue({ id: "nonexistent" });
     server.use(
       http.get(`${API_BASE}/locations/nonexistent`, () =>
         HttpResponse.json(
@@ -389,9 +394,6 @@ describe("world-browser: location detail page", () => {
         HttpResponse.json(paginatedList([]))
       ),
       http.get(`${API_BASE}/locations/nonexistent/feed`, () =>
-        HttpResponse.json(paginatedList([]))
-      ),
-      http.get(`${API_BASE}/sessions`, () =>
         HttpResponse.json(paginatedList([]))
       )
     );
@@ -409,18 +411,12 @@ describe("world-browser: location detail page", () => {
 // ── CRUD Integration: GM Create Group → redirect ──────────────────
 
 describe("world-browser: GM create group CRUD flow", () => {
-  const mockPush = vi.fn();
-
-  beforeAll(() => {
-    const { useParams } = require("next/navigation");
-    useParams.mockReturnValue({});
+  beforeEach(() => {
+    vi.mocked(useParams).mockReturnValue({});
+    mockPush.mockClear();
   });
 
   it("submitting create group form calls POST /groups and redirects", async () => {
-    // Override router push so we can assert redirect
-    const nav = require("next/navigation");
-    nav.useRouter.mockReturnValue({ push: mockPush, replace: vi.fn() });
-
     let createBody: Record<string, unknown> = {};
     server.use(
       http.post(`${API_BASE}/groups`, async ({ request }) => {

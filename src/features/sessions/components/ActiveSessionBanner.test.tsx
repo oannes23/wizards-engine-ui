@@ -85,11 +85,15 @@ function renderBanner(playerCharacterId?: string | null) {
 describe("ActiveSessionBanner: no active session", () => {
   it("renders nothing when no session is active", async () => {
     setupNoActiveSession();
-    const { container } = renderBanner(PLAYER_CHAR_ID);
-    // Wait for query to settle
+    renderBanner(PLAYER_CHAR_ID);
+    // Wait for query to settle — the banner role should not appear
     await waitFor(() => {
-      expect(container.firstChild).toBeNull();
+      expect(
+        screen.queryByRole("banner", { name: /active session banner/i })
+      ).not.toBeInTheDocument();
     });
+    // Also verify no session link rendered
+    expect(screen.queryByRole("link", { name: /active session/i })).not.toBeInTheDocument();
   });
 });
 

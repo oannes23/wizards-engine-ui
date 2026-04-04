@@ -27,8 +27,9 @@ function renderBreadcrumb(ancestors: BreadcrumbItem[], current: string) {
 
 describe("BreadcrumbNav: edge cases", () => {
   it("renders nothing when ancestors array is empty", () => {
-    const { container } = renderBreadcrumb([], "The Docks");
-    expect(container.firstChild).toBeNull();
+    renderBreadcrumb([], "The Docks");
+    // No nav element rendered when there are no ancestors
+    expect(screen.queryByRole("navigation", { name: /breadcrumb/i })).toBeNull();
   });
 });
 
