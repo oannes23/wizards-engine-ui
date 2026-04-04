@@ -4,6 +4,13 @@ import { makeFeedEvent, makeFeedStoryEntry } from "../fixtures/feeds";
 
 const API_BASE = "http://localhost:8000/api/v1";
 
+export const silentFeedEvent = makeFeedEvent({
+  id: "01EVT_SILENT0000000000000",
+  event_type: "character.meter_updated",
+  narrative: "Stress adjusted silently.",
+  visibility: "silent",
+});
+
 export const feedHandlers = [
   http.get(`${API_BASE}/me/feed`, () => {
     return HttpResponse.json(
@@ -19,6 +26,18 @@ export const feedHandlers = [
   }),
 
   http.get(`${API_BASE}/me/feed/silent`, () => {
-    return HttpResponse.json(paginatedList([]));
+    return HttpResponse.json(paginatedList([silentFeedEvent]));
+  }),
+
+  http.get(`${API_BASE}/groups/:id/feed`, () => {
+    return HttpResponse.json(
+      paginatedList([makeFeedEvent({ id: "01EVT_GROUP000000000000000" })])
+    );
+  }),
+
+  http.get(`${API_BASE}/locations/:id/feed`, () => {
+    return HttpResponse.json(
+      paginatedList([makeFeedEvent({ id: "01EVT_LOC00000000000000000" })])
+    );
   }),
 ];

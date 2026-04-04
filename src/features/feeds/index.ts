@@ -8,9 +8,11 @@ export { EventCard } from "./components/EventCard";
 export { StoryEntryCard } from "./components/StoryEntryCard";
 export { MyStoriesSidebar } from "./components/MyStoriesSidebar";
 export { StarToggle } from "./components/StarToggle";
+export { SessionTimelineFeed } from "./components/SessionTimelineFeed";
 
 // Hooks
-export { useFeed, useStarredFeed } from "./hooks/useFeed";
+export { useFeed, useStarredFeed, useSilentFeed } from "./hooks/useFeed";
+export { useGroupFeed, useLocationFeed } from "./hooks/useEntityFeed";
 export { useActiveSession } from "./hooks/useActiveSession";
 export { useStarredObjects, useStarToggle, useIsStarred } from "./hooks/useStarredObjects";
 
