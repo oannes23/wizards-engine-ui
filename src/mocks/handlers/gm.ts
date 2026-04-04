@@ -4,6 +4,8 @@ import {
   makeApprovedProposal,
   makeRejectedProposal,
 } from "../fixtures/proposals";
+import { makeCharacter } from "../fixtures/characters";
+import { makeGroup, makeLocation } from "../fixtures/world";
 import { paginatedList } from "../fixtures/helpers";
 
 const API_BASE = "http://localhost:8000/api/v1";
@@ -67,6 +69,141 @@ export const gmHandlers = [
   http.post(`${API_BASE}/proposals/:id/reject`, ({ params }) => {
     const { id } = params as { id: string };
     return HttpResponse.json(makeRejectedProposal({ id }));
+  }),
+
+  // POST /gm/actions
+  http.post(`${API_BASE}/gm/actions`, async () => {
+    return HttpResponse.json({
+      event: {
+        id: "01EVENT_GMACTION0000000",
+        type: "character.meter_updated",
+        actor_type: "gm",
+        actor_id: "01GM000000000000000000000",
+        actor_name: "The GM",
+        targets: [],
+        primary_target_name: null,
+        primary_target_type: null,
+        changes: {},
+        changes_summary: "Action applied",
+        created_objects: null,
+        deleted_objects: null,
+        narrative: null,
+        visibility: "bonded",
+        proposal_id: null,
+        parent_event_id: null,
+        session_id: null,
+        metadata: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    });
+  }),
+
+  // POST /gm/actions/batch
+  http.post(`${API_BASE}/gm/actions/batch`, async ({ request }) => {
+    const body = (await request.json()) as { actions: unknown[] };
+    const events = body.actions.map((_: unknown, i: number) => ({
+      id: `01EVENT_BATCH_${String(i).padStart(4, "0")}`,
+      type: "character.meter_updated",
+      actor_type: "gm",
+      actor_id: "01GM000000000000000000000",
+      actor_name: "The GM",
+      targets: [],
+      primary_target_name: null,
+      primary_target_type: null,
+      changes: {},
+      changes_summary: "Action applied",
+      created_objects: null,
+      deleted_objects: null,
+      narrative: null,
+      visibility: "bonded",
+      proposal_id: null,
+      parent_event_id: null,
+      session_id: null,
+      metadata: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+    return HttpResponse.json({ events });
+  }),
+
+  // POST /characters (GM create NPC)
+  http.post(`${API_BASE}/characters`, async ({ request }) => {
+    const body = (await request.json()) as { name: string; description?: string; notes?: string };
+    return HttpResponse.json(makeCharacter({
+      id: "01CHAR_NEW0000000000000",
+      name: body.name,
+      detail_level: "simplified",
+      description: body.description ?? null,
+      notes: body.notes ?? null,
+      stress: null,
+      free_time: null,
+      plot: null,
+      gnosis: null,
+      skills: null,
+      magic_stats: null,
+      traits: null,
+      magic_effects: null,
+    }), { status: 201 });
+  }),
+
+  // PATCH /characters/{id}
+  http.patch(`${API_BASE}/characters/:id`, async ({ params, request }) => {
+    const { id } = params as { id: string };
+    const body = (await request.json()) as Partial<{ name: string; description: string; notes: string }>;
+    return HttpResponse.json(makeCharacter({ id, ...body }));
+  }),
+
+  // DELETE /characters/{id}
+  http.delete(`${API_BASE}/characters/:id`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // POST /groups
+  http.post(`${API_BASE}/groups`, async ({ request }) => {
+    const body = (await request.json()) as { name: string; description?: string; notes?: string };
+    return HttpResponse.json(makeGroup({
+      id: "01GROUP_NEW0000000000000",
+      name: body.name,
+      description: body.description ?? null,
+      notes: body.notes ?? null,
+    }), { status: 201 });
+  }),
+
+  // PATCH /groups/{id}
+  http.patch(`${API_BASE}/groups/:id`, async ({ params, request }) => {
+    const { id } = params as { id: string };
+    const body = (await request.json()) as Partial<{ name: string; description: string; notes: string }>;
+    return HttpResponse.json(makeGroup({ id, ...body }));
+  }),
+
+  // DELETE /groups/{id}
+  http.delete(`${API_BASE}/groups/:id`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // POST /locations
+  http.post(`${API_BASE}/locations`, async ({ request }) => {
+    const body = (await request.json()) as { name: string; description?: string; parent_id?: string; notes?: string };
+    return HttpResponse.json(makeLocation({
+      id: "01LOC_NEW00000000000000",
+      name: body.name,
+      description: body.description ?? null,
+      parent_id: body.parent_id ?? null,
+      notes: body.notes ?? null,
+    }), { status: 201 });
+  }),
+
+  // PATCH /locations/{id}
+  http.patch(`${API_BASE}/locations/:id`, async ({ params, request }) => {
+    const { id } = params as { id: string };
+    const body = (await request.json()) as Partial<{ name: string; description: string; notes: string }>;
+    return HttpResponse.json(makeLocation({ id, ...body }));
+  }),
+
+  // DELETE /locations/{id}
+  http.delete(`${API_BASE}/locations/:id`, () => {
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
 

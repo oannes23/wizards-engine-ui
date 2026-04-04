@@ -7,6 +7,7 @@ import { proposalHandlers } from "./proposals";
 import { gmHandlers } from "./gm";
 import { sessionHandlers } from "./sessions";
 import { worldHandlers } from "./world";
+import { clockHandlers } from "./clocks";
 
 export const handlers: RequestHandler[] = [
   ...authHandlers,
@@ -17,4 +18,5 @@ export const handlers: RequestHandler[] = [
   ...gmHandlers,
   ...sessionHandlers,
   ...worldHandlers,
+  ...clockHandlers,
 ];

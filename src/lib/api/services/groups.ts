@@ -2,6 +2,20 @@ import { api, apiFetchPaginated } from "../client";
 import type { PaginatedResponse } from "../client";
 import type { GroupDetailResponse } from "../types";
 
+// ── Request Types ──────────────────────────────────────────────────
+
+export interface CreateGroupRequest {
+  name: string;
+  description?: string;
+  notes?: string;
+}
+
+export interface UpdateGroupRequest {
+  name?: string;
+  description?: string;
+  notes?: string;
+}
+
 // ── Filters ────────────────────────────────────────────────────────
 
 export interface GroupListFilters {
@@ -11,6 +25,30 @@ export interface GroupListFilters {
 }
 
 // ── Service Functions ──────────────────────────────────────────────
+
+/**
+ * POST /groups — Create a new group.
+ */
+export function createGroup(body: CreateGroupRequest): Promise<GroupDetailResponse> {
+  return api.post<GroupDetailResponse>("/groups", body);
+}
+
+/**
+ * PATCH /groups/{id} — Update name, description, notes.
+ */
+export function updateGroup(
+  id: string,
+  body: UpdateGroupRequest
+): Promise<GroupDetailResponse> {
+  return api.patch<GroupDetailResponse>(`/groups/${id}`, body);
+}
+
+/**
+ * DELETE /groups/{id} — Soft-delete.
+ */
+export function deleteGroup(id: string): Promise<void> {
+  return api.del<void>(`/groups/${id}`);
+}
 
 /**
  * GET /groups — Paginated list of groups.

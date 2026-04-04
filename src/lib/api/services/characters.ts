@@ -7,6 +7,20 @@ import type {
 
 // ── Request Types ──────────────────────────────────────────────────
 
+export interface CreateCharacterRequest {
+  name: string;
+  description?: string;
+  notes?: string;
+  attributes?: Record<string, unknown>;
+}
+
+export interface UpdateCharacterRequest {
+  name?: string;
+  description?: string;
+  notes?: string;
+  attributes?: Record<string, unknown>;
+}
+
 export interface RechargeTraitRequest {
   trait_instance_id: string;
   narrative?: string;
@@ -15,6 +29,28 @@ export interface RechargeTraitRequest {
 export interface MaintainBondRequest {
   bond_instance_id: string;
   narrative?: string;
+}
+
+// ── Create / Update / Delete ──────────────────────────────────────
+
+/** POST /characters — create simplified (NPC) character */
+export function createCharacter(
+  body: CreateCharacterRequest
+): Promise<CharacterDetailResponse> {
+  return api.post<CharacterDetailResponse>("/characters", body);
+}
+
+/** PATCH /characters/{id} — update name, description, notes */
+export function updateCharacter(
+  id: string,
+  body: UpdateCharacterRequest
+): Promise<CharacterDetailResponse> {
+  return api.patch<CharacterDetailResponse>(`/characters/${id}`, body);
+}
+
+/** DELETE /characters/{id} — soft-delete */
+export function deleteCharacter(id: string): Promise<void> {
+  return api.del<void>(`/characters/${id}`);
 }
 
 // ── List / Detail ──────────────────────────────────────────────────

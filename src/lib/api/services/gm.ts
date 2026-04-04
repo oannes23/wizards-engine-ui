@@ -1,5 +1,5 @@
 import { api } from "../client";
-import type { GmDashboardResponse } from "../types";
+import type { GmDashboardResponse, GmActionRequest, EventResponse } from "../types";
 
 // ── GM Queue Summary ──────────────────────────────────────────────
 
@@ -17,4 +17,26 @@ export function getGmQueueSummary(): Promise<GmQueueSummaryResponse> {
 /** GET /gm/dashboard — aggregated PC state + pending count */
 export function getGmDashboard(): Promise<GmDashboardResponse> {
   return api.get<GmDashboardResponse>("/gm/dashboard");
+}
+
+// ── GM Actions ────────────────────────────────────────────────────
+
+export interface GmActionResponse {
+  event: EventResponse;
+}
+
+export interface GmBatchActionResponse {
+  events: EventResponse[];
+}
+
+/** POST /gm/actions — execute single GM action */
+export function executeGmAction(body: GmActionRequest): Promise<GmActionResponse> {
+  return api.post<GmActionResponse>("/gm/actions", body);
+}
+
+/** POST /gm/actions/batch — execute 1–50 actions atomically */
+export function executeGmBatchActions(
+  actions: GmActionRequest[]
+): Promise<GmBatchActionResponse> {
+  return api.post<GmBatchActionResponse>("/gm/actions/batch", { actions });
 }
