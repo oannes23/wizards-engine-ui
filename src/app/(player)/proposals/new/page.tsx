@@ -6,15 +6,17 @@
  * 3-step wizard:
  *   Step 0: ActionTypeSelector — choose action type
  *   Step 1: WizardStep2 — fill details (dynamic per action type)
- *   Step 2: Review & Submit (Batch K — placeholder)
+ *   Step 2: ReviewStep — server calculate + submit
  *
  * State management via WizardProvider (useReducer).
  * Draft auto-saved to sessionStorage on each step change.
  * Discard confirmation via beforeunload event.
+ *
+ * Field errors from POST /proposals/calculate are passed into the
+ * step-2 forms via the `fieldErrors` prop exposed by this page.
  */
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth/useAuth";
@@ -24,98 +26,11 @@ import {
   WizardProvider,
   useWizard,
   WIZARD_STEPS,
-  clearWizardDraft,
   type WizardStep,
 } from "@/features/proposals/components/WizardProvider";
 import { ActionTypeSelector } from "@/features/proposals/components/ActionTypeSelector";
 import { WizardStep2 } from "@/features/proposals/components/WizardStep2";
-import { submitProposal } from "@/lib/api/services/proposals";
-import { useToast } from "@/lib/toast/useToast";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/hooks/query-keys";
-import { ACTION_TYPE_LABELS } from "@/lib/constants";
-
-// ── Step 3 placeholder ────────────────────────────────────────────
-
-function Step3Placeholder() {
-  const { state, goBack } = useWizard();
-  const router = useRouter();
-  const { characterId } = useAuth();
-  const { success: toastSuccess, error: toastError } = useToast();
-  const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = [false, () => {}];
-
-  async function handleSubmit() {
-    if (!characterId || !state.actionType) return;
-    try {
-      await submitProposal({
-        character_id: characterId,
-        action_type: state.actionType,
-        narrative: state.narrative || undefined,
-        selections: state.actionType ? state.formData[state.actionType] : undefined,
-      });
-      clearWizardDraft();
-      toastSuccess("Proposal submitted!");
-      queryClient.invalidateQueries({ queryKey: queryKeys.proposals.all });
-      router.push("/proposals");
-    } catch {
-      toastError("Failed to submit proposal. Please try again.");
-    }
-  }
-
-  void isSubmitting;
-
-  const actionLabel = state.actionType ? ACTION_TYPE_LABELS[state.actionType] : "Unknown";
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="rounded-lg border border-border-default bg-bg-surface p-6 flex flex-col gap-4">
-        <h2 className="text-base font-semibold text-text-primary">Review Your Proposal</h2>
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-text-secondary">Action</span>
-            <span className="font-medium text-text-primary">{actionLabel}</span>
-          </div>
-          {state.narrative && (
-            <div>
-              <p className="text-text-secondary mb-1">Narrative</p>
-              <p className="text-text-primary leading-relaxed">{state.narrative}</p>
-            </div>
-          )}
-        </div>
-        <p className="text-xs text-text-secondary italic">
-          Server calculation (dice pool, costs) coming in Batch K.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-3 pt-2">
-        <button
-          type="button"
-          onClick={goBack}
-          className="
-            inline-flex items-center gap-1.5 rounded-md px-4 py-2
-            text-sm font-medium bg-bg-elevated text-text-primary
-            hover:bg-brand-navy-light transition-colors min-h-[40px]
-          "
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back
-        </button>
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="
-            inline-flex items-center gap-1.5 rounded-md px-4 py-2
-            text-sm font-medium bg-brand-teal text-bg-page
-            hover:bg-brand-teal/90 transition-colors min-h-[40px] ml-auto
-          "
-        >
-          Submit Proposal
-        </button>
-      </div>
-    </div>
-  );
-}
+import { ReviewStep } from "@/features/proposals/components/ReviewStep";
 
 // ── Inner wizard (consumes context) ───────────────────────────────
 
@@ -123,7 +38,12 @@ function WizardInner() {
   const { characterId } = useAuth();
   const { data: character, isLoading, error } = useCharacter(characterId, { polling: false });
   const { state, goToStep, setFormData } = useWizard();
-  const router = useRouter();
+
+  // Field-level errors from POST /proposals/calculate 422 response
+  // Passed into the step 2 form so fields can highlight errors
+  const [step2FieldErrors, setStep2FieldErrors] = useState<
+    Record<string, string>
+  >({});
 
   // Warn before leaving with unsaved data
   useEffect(() => {
@@ -163,7 +83,13 @@ function WizardInner() {
     if (state.actionType) {
       setFormData(data);
     }
+    setStep2FieldErrors({});
     goToStep(2 as WizardStep);
+  }
+
+  function handleValidationErrors(errors: Record<string, string>) {
+    setStep2FieldErrors(errors);
+    // ReviewStep already navigates back to step 1 — we just store the errors
   }
 
   const stepHeadings = ["Choose Action Type", "Fill in Details", "Review & Submit"];
@@ -181,11 +107,18 @@ function WizardInner() {
       )}
 
       {state.currentStep === 1 && state.actionType && (
-        <WizardStep2 character={character} onNext={handleStep2Next} />
+        <WizardStep2
+          character={character}
+          onNext={handleStep2Next}
+          fieldErrors={step2FieldErrors}
+        />
       )}
 
-      {state.currentStep === 2 && (
-        <Step3Placeholder />
+      {state.currentStep === 2 && characterId && (
+        <ReviewStep
+          characterId={characterId}
+          onValidationErrors={handleValidationErrors}
+        />
       )}
     </div>
   );

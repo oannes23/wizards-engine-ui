@@ -5,6 +5,7 @@
 // Components
 export { ActionTypeBadge } from "./components/ActionTypeBadge";
 export { CalculatedEffectCard } from "./components/CalculatedEffectCard";
+export { ReviewStep } from "./components/ReviewStep";
 export { ProposalCard } from "./components/ProposalCard";
 export { ProposalFilterChips } from "./components/ProposalFilterChips";
 export { ActionTypeSelector } from "./components/ActionTypeSelector";

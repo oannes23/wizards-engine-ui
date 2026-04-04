@@ -4,6 +4,7 @@ import { usersHandlers } from "./users";
 import { feedHandlers } from "./feeds";
 import { characterHandlers } from "./characters";
 import { proposalHandlers } from "./proposals";
+import { gmHandlers } from "./gm";
 
 export const handlers: RequestHandler[] = [
   ...authHandlers,
@@ -11,4 +12,5 @@ export const handlers: RequestHandler[] = [
   ...feedHandlers,
   ...characterHandlers,
   ...proposalHandlers,
+  ...gmHandlers,
 ];

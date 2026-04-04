@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { NavBar } from "@/components/layout/NavBar";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { useAuth } from "@/lib/auth/useAuth";
+import { useGmQueueSummary } from "@/features/proposals/hooks/useGmQueue";
 import {
   Inbox,
   Newspaper,
@@ -14,13 +15,42 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-const GM_NAV_ITEMS = [
-  { label: "Queue", href: "/gm", icon: <Inbox className="h-5 w-5" /> },
-  { label: "Feed", href: "/gm/feed", icon: <Newspaper className="h-5 w-5" /> },
-  { label: "World", href: "/gm/world", icon: <Globe className="h-5 w-5" /> },
-  { label: "Sessions", href: "/gm/sessions", icon: <CalendarDays className="h-5 w-5" /> },
-  { label: "More", href: "/gm/players", icon: <MoreHorizontal className="h-5 w-5" /> },
-];
+// ── Nav items with live badge ─────────────────────────────────────
+
+function useGmNavItems() {
+  const { data: pendingCount } = useGmQueueSummary();
+
+  return [
+    {
+      label: "Queue",
+      href: "/gm",
+      icon: <Inbox className="h-5 w-5" />,
+      badge: pendingCount ?? undefined,
+    },
+    {
+      label: "Feed",
+      href: "/gm/feed",
+      icon: <Newspaper className="h-5 w-5" />,
+    },
+    {
+      label: "World",
+      href: "/gm/world",
+      icon: <Globe className="h-5 w-5" />,
+    },
+    {
+      label: "Sessions",
+      href: "/gm/sessions",
+      icon: <CalendarDays className="h-5 w-5" />,
+    },
+    {
+      label: "More",
+      href: "/gm/players",
+      icon: <MoreHorizontal className="h-5 w-5" />,
+    },
+  ];
+}
+
+// ── Inner layout (role-guarded) ───────────────────────────────────
 
 /**
  * GmLayoutInner — Layer 2 role guard for GM routes.
@@ -33,6 +63,7 @@ const GM_NAV_ITEMS = [
 function GmLayoutInner({ children }: { children: ReactNode }) {
   const { user, isLoading, canViewGmContent, isPlayer } = useAuth();
   const router = useRouter();
+  const navItems = useGmNavItems();
 
   useEffect(() => {
     if (isLoading) return;
@@ -62,7 +93,7 @@ function GmLayoutInner({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <NavBar items={GM_NAV_ITEMS} role="gm" />
+      <NavBar items={navItems} role="gm" />
       <main className="pb-20 md:pb-0 md:pt-0">
         {children}
       </main>
