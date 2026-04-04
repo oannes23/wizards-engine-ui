@@ -1,7 +1,7 @@
 # Magic System
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [characters.md](characters.md), [proposals.md](proposals.md), [../glossary.md](../glossary.md)
 
 ## Overview
@@ -182,3 +182,19 @@ Modifiers: (same as use_skill)
 - **Decision**: Pre-fill effect name from the proposal's narrative/intention. Default effect type to "charged". GM edits freely.
 - **Rationale**: Saves GM time on the most common path. Narrative often contains the effect name ("I cast a ward of protection" → effect name "Ward of Protection").
 - **Implications**: GM approval form for `use_magic` populates `EffectDetails` with `name` from narrative, `effect_type: 'charged'`. All fields are editable.
+
+---
+
+## Implementation Notes (verified 2026-04-03)
+
+### SacrificeBuilder: stress stepper bounds
+
+The spec says stress stepper range is `0 → available stress capacity`. The implementation computes `availableStressCap = Math.max(0, effectiveStressMax - currentStress)` — the number of additional stress points the character can take before hitting effective max. This is the correct interpretation.
+
+### SacrificeBuilder: no section headers for gnosis/stress/FT
+
+The spec wireframe shows row headers for each source. The implementation groups gnosis, stress, and FT as unlabeled `Stepper` components with a divider between each. Bond and trait sacrifices each get an uppercase section label ("Bond Sacrifice" / "Trait Sacrifice"). The running total remains prominently displayed as specified.
+
+### `sacrifice` payload key (canonical)
+
+The `buildSacrificePayload` function in `sacrificeMath.ts` produces an array. This is attached to the form output as the key `sacrifice` (singular), matching `UseMagicSelections.sacrifice` and `ChargeMagicSelections.sacrifice` in the API types. The spec's schema blocks show `sacrifices[]` — that notation describes the type, not the key. The canonical key is `sacrifice`.

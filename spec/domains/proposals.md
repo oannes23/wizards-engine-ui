@@ -1,7 +1,7 @@
 # Proposals
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified against implementation
+> Last verified: 2026-04-03
 > Related: [characters.md](characters.md), [magic.md](magic.md), [traits.md](traits.md), [bonds.md](bonds.md), [../api/contract.md#proposals](../api/contract.md#proposals)
 
 ## Overview
@@ -377,3 +377,33 @@ Use `useReducer` scoped to the wizard component tree. State must survive step na
 - ~~Exact shape of `calculated_effect` per action type~~ — Fully documented in `response-shapes.md`.
 - ~~Whether `POST /proposals` has a dry-run mode~~ — CR-001 implemented: `POST /proposals/calculate` returns `calculated_effect` without side effects.
 - ~~Available `gm_overrides` flags per action type~~ — Fully documented in `response-shapes.md`.
+
+---
+
+## Implementation Divergences (verified 2026-04-03)
+
+The following differences between this spec and the Phase 2 implementation were found and accepted during TW-3.
+
+### `sacrifice` key (not `sacrifices`)
+
+The spec's `use_magic` and `charge_magic` selections schemas show the array as `sacrifices[]`. The API types (`UseMagicSelections`, `ChargeMagicSelections` in `src/lib/api/types.ts`) and the form output (`UseMagicForm.onSubmit`) both use the singular key `sacrifice`. This is the canonical name sent to the API.
+
+### Dice pool bar: not sticky in implementation
+
+The spec describes a "sticky bar at the bottom of Step 2" (`position: sticky; bottom: 0`). The implementation renders a non-sticky summary div at the bottom of each form instead. The "Next: Review" button is a standard button within the form, not embedded in the sticky bar. The running total is visible but scrolls with the page. This was a deliberate simplification during implementation.
+
+### Plot dice shown separately from regular dice in use_magic preview
+
+The spec describes a single combined dice pool value. In `UseMagicForm`, the dice pool preview in Step 2 shows sacrifice dice and modifier dice separately (e.g., "2d from sacrifices + 1 modifier") rather than a single combined number. The `CalculatedEffectCard` in Step 3 shows the full combined `dice_pool` from the server response.
+
+### GmOverridesForm and RiderEventForm: not separate components
+
+The spec lists these as separate composites. In implementation, they are internal sub-components of `ApproveForm.tsx` (`MagicOverridesPanel`, `RiderEventForm`, `ResolveTraumaForm`, `ResolveClockForm` — all unexported). The behavior matches the spec; only the file boundary differs.
+
+### work_on_project rider pre-fill: triggered on Options open, not on form load
+
+The spec describes the rider being pre-filled when the GM opens the approval form for a `work_on_project` proposal with a `clock_id`. In the implementation, the pre-fill fires when the GM first opens the "Options" panel (`handleToggleOptions`), not on card render. Functionally equivalent — the rider is only visible inside Options.
+
+### System proposal detection: dual check
+
+The spec says system proposals are identified by `action_type` (`resolve_trauma`, `resolve_clock`). The implementation also checks `proposal.origin === "system"` as a fallback, making the detection more robust against future system proposal types.

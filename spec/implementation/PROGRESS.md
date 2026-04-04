@@ -43,35 +43,35 @@ Living tracker updated as stories are completed. See [ORCHESTRATION.md](ORCHESTR
 | 2.3.2 | FeedList component | H | frontend-dev | Complete | Infinite scroll, new-item banner, skeleton |
 | 2.3.3 | Player feed page | H | frontend-dev | Complete | All/Starred tabs + MyStoriesSidebar |
 | 2.3.4 | Starred management | H | frontend-dev | Complete | StarToggle (connected), useStarredObjects, useStarToggle |
-| — | GATE-1 + TW-2 | — | all reviewers | In Progress | TW-2 tasks: this update |
+| — | GATE-1 + TW-2 | — | all reviewers | Complete | |
 
 ## Phase 2: Core Gameplay
 
 | Story | Title | Batch | Agent | Status | Notes |
 |-------|-------|-------|-------|--------|-------|
-| 2.1.1 | Proposals list page | I | frontend-dev | Not Started | |
-| 2.1.2 | Proposal detail page | I | frontend-dev | Not Started | |
-| 2.1.3 | Step indicator | J | frontend-dev | Not Started | |
-| 2.1.4 | Wizard step 1 | J | frontend-dev | Not Started | |
-| 2.1.7 | Wizard step 2: downtime | J | frontend-dev | Not Started | Before use_skill (pattern est.) |
-| 2.1.5 | Wizard step 2: use_skill | K | frontend-dev | Not Started | |
-| 2.1.6 | Wizard step 2: magic | K | frontend-dev | Not Started | HIGHEST RISK |
-| 2.1.8 | Sacrifice builder | K | frontend-dev | Not Started | |
-| — | Inline-2: Magic review | — | game-designer, architect, code-reviewer | Not Started | CRITICAL — after K |
-| 2.1.9 | Wizard step 3: review | L | frontend-dev | Not Started | |
-| 2.1.10 | Proposal edit/delete | L | frontend-dev | Not Started | |
-| — | QA-4: Proposal tests | — | qa-engineer | Not Started | After L |
-| 2.2.1 | GM queue page | M | frontend-dev | Not Started | |
-| 2.2.2 | Proposal review card | M | frontend-dev | Not Started | |
-| 2.2.3 | Approve form | M | frontend-dev | Not Started | |
-| 2.2.4 | Reject form | M | frontend-dev | Not Started | |
-| 2.2.5 | Queue summary | M | frontend-dev | Not Started | |
-| 2.2.6 | Nav badge | M | frontend-dev | Not Started | |
-| 2.3.5 | GM event feed | N | frontend-dev | Not Started | After H |
-| 2.3.6 | Session timeline feed | N | frontend-dev | Not Started | |
-| 2.3.7 | Entity-scoped feeds | N | frontend-dev | Not Started | |
-| — | QA-5: Queue & feed tests | — | qa-engineer | Not Started | After M+N |
-| — | GATE-2 + TW-3 | — | all reviewers | Not Started | After QA-4, QA-5 |
+| 2.1.1 | Proposals list page | I | frontend-dev | Complete | ProposalCard + ProposalFilterChips |
+| 2.1.2 | Proposal detail page | I | frontend-dev | Complete | |
+| 2.1.3 | Step indicator | J | frontend-dev | Complete | StepIndicator primitive (Phase 0) |
+| 2.1.4 | Wizard step 1 | J | frontend-dev | Complete | ActionTypeSelector |
+| 2.1.7 | Wizard step 2: downtime | J | frontend-dev | Complete | RegainGnosisForm, RestForm, WorkOnProjectForm, NewTraitForm, NewBondForm |
+| 2.1.5 | Wizard step 2: use_skill | K | frontend-dev | Complete | UseSkillForm |
+| 2.1.6 | Wizard step 2: magic | K | frontend-dev | Complete | UseMagicForm, ChargeMagicForm |
+| 2.1.8 | Sacrifice builder | K | frontend-dev | Complete | SacrificeBuilder + sacrificeMath.ts |
+| — | Inline-2: Magic review | — | game-designer, architect, code-reviewer | Complete | |
+| 2.1.9 | Wizard step 3: review | L | frontend-dev | Complete | ReviewStep + CalculatedEffectCard |
+| 2.1.10 | Proposal edit/delete | L | frontend-dev | Complete | WizardProvider initialData prop; PATCH in ReviewStep |
+| — | QA-4: Proposal tests | — | qa-engineer | Complete | |
+| 2.2.1 | GM queue page | M | frontend-dev | Complete | |
+| 2.2.2 | Proposal review card | M | frontend-dev | Complete | GmProposalReviewCard |
+| 2.2.3 | Approve form | M | frontend-dev | Complete | ApproveForm (incl. MagicOverridesPanel, RiderEventForm, ResolveTrauma/ClockForm) |
+| 2.2.4 | Reject form | M | frontend-dev | Complete | RejectForm |
+| 2.2.5 | Queue summary | M | frontend-dev | Complete | GmQueueSummary |
+| 2.2.6 | Nav badge | M | frontend-dev | Complete | useProposalBadge |
+| 2.3.5 | GM event feed | N | frontend-dev | Complete | GmFeedFilterPanel |
+| 2.3.6 | Session timeline feed | N | frontend-dev | Complete | SessionTimelineFeed |
+| 2.3.7 | Entity-scoped feeds | N | frontend-dev | Complete | useEntityFeed |
+| — | QA-5: Queue & feed tests | — | qa-engineer | Complete | |
+| — | GATE-2 + TW-3 | — | all reviewers | Complete | TW-3 tasks: this update |
 
 ## Phase 3: World & Management
 

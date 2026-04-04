@@ -1,6 +1,6 @@
 # Component Catalog
 
-> Status: Partially verified (Phase 0 + Phase 1 complete)
+> Status: Partially verified (Phase 0 + Phase 1 + Phase 2 complete)
 > Last verified: 2026-04-03
 > Related: [design-system.md](design-system.md), [player-views.md](player-views.md), [gm-views.md](gm-views.md)
 
@@ -17,7 +17,7 @@ All Phase 0 primitives are implemented. Status column: **Impl** = implemented, *
 | **ClockBar** | Impl | Linear segmented progress bar with N segments, M filled, plus numeric label | `segments`, `progress`, `isCompleted?`, `size?` |
 | **StatusBadge** | Impl | Colored pill for statuses | `status`, `variant` (proposal/session/story) |
 | **VisibilityBadge** | Spec | Visibility level indicator | `level` |
-| **ActionTypeBadge** | Spec | Colored label for action types | `actionType` |
+| **ActionTypeBadge** | Impl | Colored label for action types | `actionType` |
 | **RoleBadge** | Spec | Role pill: "GM", "Player", or "Viewer" | `role` |
 | **EntityLink** | Impl | Clickable entity reference with type icon. Faded styling (`opacity-50`) when `isDeleted` is true. | `type` (character/group/location/story), `id`, `name`, `isDeleted?` |
 | **TimeDisplay** | Impl | Formats `time_now` integer into Season display: "Time Now 42 (Chaos 19)". 6 seasons of 23 each: Tutorial, Chaos, Discord, Confusion, Bureaucracy, Aftermath. | `timeNow` |
@@ -35,7 +35,7 @@ All Phase 0 primitives are implemented. Status column: **Impl** = implemented, *
 
 Domain-aware components that assemble primitives. In `src/features/*/` directories.
 
-Status: **Impl** = implemented (Phase 0/1), **Spec** = spec only.
+Status: **Impl** = implemented (Phase 0/1/2), **Spec** = spec only.
 
 | Component | Feature | Status | Description |
 |-----------|---------|--------|-------------|
@@ -55,20 +55,31 @@ Status: **Impl** = implemented (Phase 0/1), **Spec** = spec only.
 | **CharacterTabs** | `character/` | Impl | 6-tab mobile layout: Overview, Traits, Bonds, Magic, Skills & Stats, Feed |
 | **MyStoriesSidebar** | `feeds/` | Impl | Compact active-story list; desktop=sidebar, mobile=collapsible |
 | **StarToggle (connected)** | `feeds/` | Impl | Feature-layer star toggle wrapping the primitive with optimistic mutation |
-| **ProposalCard** | `proposals/` | Spec | Accordion showing proposal summary; expands to detail + approve/reject (GM) |
+| **ProposalCard** | `proposals/` | Impl | Player-facing card: action type badge, narrative, status, timestamp; pending = Edit/Delete, rejected = rejection note + Revise |
+| **ProposalFilterChips** | `proposals/` | Impl | Filter chip row: All, Pending, Approved, Rejected with counts |
+| **ActionTypeSelector** | `proposals/` | Impl | Wizard step 1 — grouped action cards (Session / Downtime / System) with disabled states |
+| **WizardProvider** | `proposals/` | Impl | Wizard state context using `useReducer`; sessionStorage draft save/restore; `initialData` prop for revise flow |
+| **WizardStep2** | `proposals/` | Impl | Dynamic form dispatcher for step 2; routes to correct form component per action type; 422 field-error banner |
+| **ReviewStep** | `proposals/` | Impl | Wizard step 3 — fires `POST /proposals/calculate` on mount; shows CalculatedEffectCard; 422 navigates back to step 2; submit fires `POST /proposals` or `PATCH /proposals/{id}` |
+| **SacrificeBuilder** | `proposals/` | Impl | Inline multi-type sacrifice selection with running gnosis-equivalent total; stepper [+]/[-] for gnosis/stress/FT; toggle+confirm for bond/trait; "Add creative sacrifice" expander |
+| **ModifierSelector** | `proposals/` | Impl | Three-slot picker (Core Trait / Role Trait / Bond) with charge display; 0-charge items disabled |
+| **CalculatedEffectCard** | `proposals/` | Impl | Formatted summary of server-computed calculated_effect; per-action-type renderers for all 8 player action types |
+| **ApproveForm** | `proposals/` | Impl | GM approval form — system proposals render inline ResolveTraumaForm/ResolveClockForm; player proposals render quick Approve button + expandable Options (narrative override, force/bond_strained flags, MagicOverridesPanel, RiderEventForm); `work_on_project` + clock_id pre-fills rider as `clock.advanced` |
+| **RejectForm** | `proposals/` | Impl | Simple rejection note textarea + Reject button |
+| **GmProposalReviewCard** | `proposals/` | Impl | GM queue card — system proposals get amber border/badge + inline form; player proposals show ActionTypeBadge, revision count badge, narrative, SelectionsSummary, CalculatedEffectCard, ApproveForm, RejectForm |
+| **GmQueueSummary** | `proposals/` | Impl | GM queue sidebar — pending count, PC summary cards with mini MeterBars and stress alert icon, near-completion clocks |
+| **GmFeedFilterPanel** | `feeds/` | Impl | Advanced filter controls for GM event feed — item type radio, target type select, actor type select, date range inputs; Reset button when filters active |
+| **SessionTimelineFeed** | `feeds/` | Impl | Session-scoped feed — wraps FeedList with `session_id` filter; polls at 15s/5s active |
 | **GameObjectCard** | `world/` | Spec | Shared card for character/group/location with type icon, name, subtitle, star toggle |
 | **CharacterSummaryRow** | `character/` | Spec | Compact row: name + 4 mini meter bars |
 | **ClockCard** | `clocks/` | Spec | Clock name + ClockBar + progress label |
 | **StoryEntry** | `stories/` | Spec | Single entry: author, text, timestamp, edit/delete for owner. Inline edit mode. |
-| **SacrificeBuilder** | `proposals/` | Spec | Inline multi-type sacrifice selection with running gnosis-equivalent total |
-| **ModifierSelector** | `proposals/` | Spec | Three-slot picker (Core Trait / Role Trait / Bond) with charge display |
 | **DicePoolBar** | `proposals/` | Spec | Sticky summary bar with live dice pool calculation + costs + Next button |
-| **CalculatedEffectCard** | `proposals/` | Spec | Formatted summary of server-computed calculated_effect |
 | **DataTable** | shared | Spec | Responsive: sortable table (desktop) / card list (mobile) with column filters |
 | **NavBar** | shared | Impl | Responsive nav with role-specific items; player: 5 items (Feed, Character, Proposals, World, Profile); GM: 5 items (Queue, Feed, World, Sessions, More→/gm/players) |
 | **ActiveSessionBanner** | `sessions/` | Spec | Persistent teal-accented banner for active session state (player: join/leave; GM: link to detail). Moderate prominence — visible but not disruptive. |
-| **GmOverridesForm** | `proposals/` | Spec | Approval options: narrative override + flags + magic overrides sub-panel + rider event |
-| **RiderEventForm** | `proposals/` | Spec | Compact GM action type-selector for rider events |
+| **GmOverridesForm** | `proposals/` | — | Absorbed into ApproveForm (Options panel + MagicOverridesPanel sub-components) — not a separate file |
+| **RiderEventForm** | `proposals/` | — | Absorbed into ApproveForm as `RiderEventForm` internal component — not a separate file |
 | **ParticipantList** | `sessions/` | Spec | Session participants with add/remove, "Add All", contribution toggle, searchable dropdown |
 | **PresenceTiers** | `locations/` | Spec | Tiered entity list with opacity degradation (100%/70%/50%), empty tier hiding |
 | **BreadcrumbNav** | `locations/` | Spec | Ancestor breadcrumb trail with middle truncation at depth > 3 |
@@ -163,5 +174,6 @@ Primitives should be built first (Epic 0.1), as they are used across all feature
 1. **[Complete]** MeterBar, ChargeDots, ClockBar, StatusBadge, EntityLink, EmptyState, Modal variants, StarToggle (Phase 0 — Epic 0.1)
 2. **[Complete]** MeterHeader, TraitItem, TraitsSection, BondItem, BondsSection, MagicEffectItem, MagicEffectsSection, SkillGrid, MagicStatGrid, CharacterTabs (Phase 1 — Epic 1.2)
 3. **[Complete]** FeedItem, EventCard, StoryEntryCard, FeedList, MyStoriesSidebar, StarToggle (connected), PlayerFeedPage (Phase 1 — Epic 2.3 Batch H)
-4. CharacterSummaryRow, ProposalCard, ModifierSelector, SacrificeBuilder, DicePoolBar, CalculatedEffectCard, GmOverridesForm, RiderEventForm, ActiveSessionBanner (Phase 2 — Proposals + remaining feeds)
-5. GameObjectCard, DataTable, PresenceTiers, BreadcrumbNav, ParticipantList (Phase 3 — World Browser & Sessions)
+4. **[Complete]** ActionTypeBadge, ProposalCard, ProposalFilterChips, ActionTypeSelector, WizardProvider, WizardStep2, ReviewStep, SacrificeBuilder, ModifierSelector, CalculatedEffectCard, ApproveForm, RejectForm, GmProposalReviewCard, GmQueueSummary, GmFeedFilterPanel, SessionTimelineFeed (Phase 2 — Epics 2.1, 2.2, 2.3 Batch N)
+5. CharacterSummaryRow, ActiveSessionBanner, DicePoolBar (Phase 2 remaining — not yet implemented)
+6. GameObjectCard, DataTable, PresenceTiers, BreadcrumbNav, ParticipantList (Phase 3 — World Browser & Sessions)

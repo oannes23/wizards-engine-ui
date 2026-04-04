@@ -11,7 +11,7 @@
  *   - ModifierSelector (max +3d)
  *
  * Narrative is optional for session actions.
- * Dice pool = sacrifice dice + modifier dice.
+ * Dice pool = stat_level + sacrifice_dice + modifier_count (per spec).
  * No FT cost (FT may be sacrificed but is a player choice).
  */
 
@@ -104,6 +104,7 @@ export function UseMagicForm({ character, onNext }: UseMagicFormProps) {
   });
 
   const modifiers = watch("modifiers") as ModifierSelections;
+  const selectedMagicStat = watch("magic_stat") as MagicStatName | undefined;
 
   // Sacrifice state (local, synced to wizard on submit)
   const [sacrifice, setSacrifice] = useLocalState<SacrificeBuilderValue>(savedSacrifice);
@@ -116,7 +117,9 @@ export function UseMagicForm({ character, onNext }: UseMagicFormProps) {
     (modifiers?.core_trait_id ? 1 : 0) +
     (modifiers?.role_trait_id ? 1 : 0) +
     (modifiers?.bond_id ? 1 : 0);
-  const totalDice = sacrificeDice + modifierCount;
+  const statLevel =
+    selectedMagicStat && magicStats ? (magicStats[selectedMagicStat]?.level ?? 0) : 0;
+  const totalDice = statLevel + sacrificeDice + modifierCount;
 
   const traits = character.traits?.active ?? [];
   const bonds = character.bonds?.active ?? [];
@@ -268,7 +271,18 @@ export function UseMagicForm({ character, onNext }: UseMagicFormProps) {
       >
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-text-secondary">
-            {sacrificeDice}d from sacrifices
+            {statLevel > 0 && (
+              <span className="text-brand-teal">{statLevel}d from stat</span>
+            )}
+            {statLevel > 0 && sacrificeDice > 0 && (
+              <span> + </span>
+            )}
+            {sacrificeDice > 0 && (
+              <span>{sacrificeDice}d from sacrifices</span>
+            )}
+            {statLevel === 0 && sacrificeDice === 0 && (
+              <span>0d from sacrifices</span>
+            )}
             {modifierCount > 0 && (
               <span className="text-brand-teal"> + {modifierCount} modifier{modifierCount !== 1 ? "s" : ""}</span>
             )}

@@ -54,8 +54,8 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | [domains/characters.md](domains/characters.md) | Verified against implementation | 2026-04-03 |
 | [domains/bonds.md](domains/bonds.md) | Verified against implementation | 2026-04-03 |
 | [domains/traits.md](domains/traits.md) | Verified against implementation | 2026-04-03 |
-| [domains/magic.md](domains/magic.md) | Deepened | 2026-03-27 |
-| [domains/proposals.md](domains/proposals.md) | Deepened | 2026-03-27 |
+| [domains/magic.md](domains/magic.md) | Verified against implementation | 2026-04-03 |
+| [domains/proposals.md](domains/proposals.md) | Verified against implementation | 2026-04-03 |
 | [domains/sessions.md](domains/sessions.md) | Deepened | 2026-03-27 |
 | [domains/groups.md](domains/groups.md) | Deepened | 2026-03-27 |
 | [domains/locations.md](domains/locations.md) | Deepened | 2026-03-27 |
@@ -64,7 +64,7 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | [domains/users.md](domains/users.md) | Verified against implementation | 2026-04-03 |
 | [api/contract.md](api/contract.md) | Deepened | 2026-03-26 |
 | [api/response-shapes.md](api/response-shapes.md) | Deepened | 2026-03-26 |
-| [ui/components.md](ui/components.md) | Partially verified (Phase 0+1) | 2026-04-03 |
+| [ui/components.md](ui/components.md) | Partially verified (Phase 0+1+2) | 2026-04-03 |
 | [ui/player-views.md](ui/player-views.md) | Deepened | 2026-03-27 |
 | [ui/gm-views.md](ui/gm-views.md) | Deepened | 2026-03-27 |
 | [ui/design-system.md](ui/design-system.md) | Deepened | 2026-03-26 |
@@ -80,9 +80,9 @@ The canonical backend/game reference is [FRONTEND_SEED.md](../FRONTEND_SEED.md).
 | 0 | [0.1 Scaffolding](implementation/phase0-scaffolding.md) | Complete | — |
 | 1 | [1.1 Auth & Onboarding](implementation/phase1-auth-onboarding.md) | Complete | 0.1 |
 | 1 | [1.2 Character Sheet](implementation/phase1-character-sheet.md) | Complete | 0.1 |
-| 2 | [2.1 Proposals](implementation/phase2-proposals.md) | Not Started | 1.1, 1.2 |
-| 2 | [2.2 GM Queue](implementation/phase2-gm-queue.md) | Not Started | 2.1 |
-| 2 | [2.3 Feeds & Events](implementation/phase2-feeds.md) | In Progress (Batch H done, Batch N pending) | 0.1 |
+| 2 | [2.1 Proposals](implementation/phase2-proposals.md) | Complete | 1.1, 1.2 |
+| 2 | [2.2 GM Queue](implementation/phase2-gm-queue.md) | Complete | 2.1 |
+| 2 | [2.3 Feeds & Events](implementation/phase2-feeds.md) | Complete (Batch H + Batch N done) | 0.1 |
 | 3 | [3.1 World Browser](implementation/phase3-world-browser.md) | Not Started | 1.2 |
 | 3 | [3.2 GM World Management](implementation/phase3-gm-world-management.md) | Not Started | 3.1 |
 | 3 | [3.3 Sessions](implementation/phase3-sessions.md) | Not Started | 1.2 |
