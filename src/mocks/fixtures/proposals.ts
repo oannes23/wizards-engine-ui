@@ -64,6 +64,46 @@ export function makeRejectedProposal(
   });
 }
 
+/**
+ * Factory for a calculated_effect payload — returned by POST /proposals/calculate
+ * and embedded in approved proposals.
+ */
+export function makeCalculatedEffect(
+  overrides?: Partial<Record<string, unknown>>
+): Record<string, unknown> {
+  return {
+    dice_pool: 4,
+    skill: "finesse",
+    skill_level: 3,
+    modifiers: [],
+    plot_spend: 0,
+    costs: {
+      trait_charges: [],
+      plot: 0,
+    },
+    ...overrides,
+  };
+}
+
+/**
+ * System-generated proposal (e.g. resolve_trauma on stress max).
+ * origin: "system" distinguishes it from player-submitted proposals.
+ */
+export function makeSystemProposal(
+  overrides?: Partial<ProposalResponse>
+): ProposalResponse {
+  return makeProposal({
+    id: "01PROPOSAL_SYSTEM0000000",
+    action_type: "resolve_trauma",
+    status: "pending",
+    origin: "system",
+    narrative:
+      "Stress has reached its maximum. A trauma must be resolved.",
+    selections: {},
+    ...overrides,
+  });
+}
+
 export function makePendingMagicProposal(
   overrides?: Partial<ProposalResponse>
 ): ProposalResponse {
