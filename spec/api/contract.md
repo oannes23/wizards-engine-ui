@@ -12,18 +12,23 @@ All paths are relative to `/api/v1/`. Auth column: `None` = no auth required, `A
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | `POST` | `/auth/login` | None | Login with magic link code |
+| `POST` | `/auth/logout` | None | Clear auth cookie (204 No Content) |
 | `POST` | `/setup` | None | Bootstrap GM account (one-time) |
-| `POST` | `/game/join` | None | Redeem invite: create player + character atomically |
+| `POST` | `/game/join` | None | Redeem invite: create player/viewer + character atomically |
 
 ### POST /auth/login
 
 Request: `{ code: string }`
 
-Response (user exists): `{ id, display_name, role, character_id }` + sets cookie
+Response (user exists): `{ id, display_name, role, character_id }` + sets cookie. `role` can be `"gm"`, `"player"`, or `"viewer"`.
 
 Response (invite code): `{}` (empty object — signals join flow)
 
 Error: 404 if code not found
+
+### POST /auth/logout
+
+No request body. Returns 204 No Content. Clears the `login_code` httpOnly cookie. Does NOT invalidate the login code — the magic link remains usable. No authentication required.
 
 ### POST /setup
 
@@ -37,7 +42,9 @@ Error: 409 if GM already exists
 
 Request: `{ code: string, character_name: string, display_name: string }`
 
-Response: UserResponse + sets cookie
+For viewer invites, `character_name` is not required: `{ code: string, display_name: string }`
+
+Response: UserResponse + sets cookie. Viewer response has `character_id: null`.
 
 ---
 
@@ -45,7 +52,7 @@ Response: UserResponse + sets cookie
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/me` | Any | Current user identity |
+| `GET` | `/me` | Any | Current user identity (includes `can_view_gm_content`, `can_take_gm_actions`) |
 | `PATCH` | `/me` | Any | Update display name |
 | `POST` | `/me/character` | GM | Create full (PC) character linked to GM |
 | `POST` | `/me/refresh-link` | Any | Rotate own login code |
@@ -58,8 +65,8 @@ Response: UserResponse + sets cookie
 |--------|------|------|-------------|
 | `GET` | `/players` | Any | List all users (GM sees login_url) |
 | `POST` | `/players/{id}/regenerate-token` | GM | Rotate player's login code |
-| `POST` | `/game/invites` | GM | Generate invite code |
-| `GET` | `/game/invites` | GM | List all invites (paginated) |
+| `POST` | `/game/invites` | GM | Generate invite code (optional body: `{ role?: "player" \| "viewer" }`) |
+| `GET` | `/game/invites` | GM/Viewer | List all invites (paginated, response includes `role` field) |
 | `DELETE` | `/game/invites/{id}` | GM | Delete unconsumed invite (409 if consumed) |
 
 ---

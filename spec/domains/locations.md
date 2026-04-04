@@ -8,6 +8,8 @@
 
 Locations are Game Objects representing places in the game world. They support parent/child nesting for geographic hierarchy and have presence tiers derived from bond-graph traversal.
 
+**Bond-distance detail gating**: Players see full location details only for locations within 3 hops of their character. Locations outside that range show name and description only. GM and viewer roles always see full detail. See `characters.md` for the full gating decision and CR-013.
+
 ## Key Properties
 
 - **Parent/child hierarchy**: Locations can nest via `parent_id`. Changed via GM actions, not direct PATCH.

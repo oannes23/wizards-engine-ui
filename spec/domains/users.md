@@ -1,7 +1,7 @@
 # Users
 
-> Status: Deepened
-> Last verified: 2026-03-26
+> Status: Verified
+> Last verified: 2026-04-03
 > Related: [../architecture/auth.md](../architecture/auth.md), [characters.md](characters.md)
 
 ## Overview
@@ -11,34 +11,51 @@ Users represent the real people playing the game. Each user has a role (GM or pl
 ## Key Properties
 
 - **display_name**: Editable via `PATCH /me`
-- **role**: `"gm"` or `"player"` — immutable after creation
+- **role**: `"gm"`, `"player"`, or `"viewer"` — immutable after creation
 - **character_id**: Links to the user's PC (null for GM without a character)
 - **login_code**: Used for magic-link auth. Rotatable via `POST /me/refresh-link`
 
-## Two Roles
+## Three Roles
 
 | Role | Count | Can Do |
 |------|-------|--------|
 | `gm` | Exactly 1 | Everything: approve/reject proposals, manage world, run sessions, GM actions |
 | `player` | 4–6 | Submit proposals, view own character, explore visible world, write story entries |
+| `viewer` | 0+ | GM-level read access (dashboard, queue, all proposals, events except `silent`, all characters, sessions, invites). Blocked from all mutations (403 `insufficient_role`). No character (`character_id: null`). Invisible to players in roster. Can star/unstar objects. |
+
+### Capability-Based Rendering
+
+Instead of checking `role === "gm"` directly, use the capability flags from `GET /me`:
+
+| Flag | GM | Viewer | Player |
+|------|-----|--------|--------|
+| `can_view_gm_content` | `true` | `true` | `false` |
+| `can_take_gm_actions` | `true` | `false` | `false` |
+
+Use `can_view_gm_content` to gate read access to GM views. Use `can_take_gm_actions` to show/hide action buttons (approve, reject, create, edit, delete). Use `role === "player"` for proposal submission eligibility.
 
 ## Player Management (GM)
 
-- `GET /players` — list all users (GM sees `login_url`; players see it omitted)
+- `GET /players` — list all users. Role-dependent visibility:
+  - GM: sees all users (including viewers) with `login_url`
+  - Viewer: sees all users (including viewers) without `login_url`
+  - Player: sees only GM and players (viewers filtered out), no `login_url`
 - `POST /players/{id}/regenerate-token` — rotate a player's login code (GM only)
 
 ## Invites
 
-GM generates invite codes for new players:
+GM generates invite codes for new players or viewers:
 
-- `POST /game/invites` — generate invite code, returns `{id, is_consumed, login_url}`
-- `GET /game/invites` — list all invites (paginated)
+- `POST /game/invites` — generate invite code. Optional body: `{ "role": "viewer" }` for viewer invites (default: `"player"`). Returns `{id, is_consumed, role, login_url}`
+- `GET /game/invites` — list all invites (paginated). Response includes `role` field per invite.
 - `DELETE /game/invites/{id}` — delete unconsumed invite (409 if consumed)
 
 When a new player visits the invite's magic link:
 1. `POST /auth/login` with the code returns `{}` (invite signal)
 2. Frontend shows the join form
 3. `POST /game/join` with `{code, character_name, display_name}` creates user + character atomically
+
+For **viewer** invites, `character_name` is not required: `{code, display_name}`. Response has `character_id: null`.
 
 ## Profile
 

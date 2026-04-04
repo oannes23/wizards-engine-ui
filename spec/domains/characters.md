@@ -1,12 +1,18 @@
 # Characters
 
-> Status: Deepened
-> Last verified: 2026-03-26
+> Status: Verified
+> Last verified: 2026-04-03
 > Related: [bonds.md](bonds.md), [traits.md](traits.md), [magic.md](magic.md), [../api/contract.md#characters](../api/contract.md#characters)
 
 ## Overview
 
 Characters are the primary Game Objects. Two detail levels exist: **full** (PC — Player Character) with complete mechanical depth, and **simplified** (NPC — Non-Player Character) with basic fields and bonds only. Every player owns exactly one full character; NPCs are created by the GM.
+
+### Bond-Distance Detail Gating (Player World Browser)
+
+Players see full entity details only for entities within 3 hops of their character (the "public" visibility tier per bond graph traversal). Entities outside that range show **name and description only** — no meters, traits, bonds, skills, magic effects, etc. GM and viewer roles always see full detail.
+
+This requires a backend bond-distance endpoint (CR-013). The frontend renders a "minimal" variant of the character detail page when the player lacks bond proximity.
 
 ## Meters
 
@@ -90,36 +96,40 @@ The player's own character sheet polls `GET /characters/{id}` at 15s (or 5s duri
 
 ## Interrogation Decisions (2026-03-26)
 
-### Character Sheet: 5 Tabs on Mobile
+### Character Sheet: 6 Tabs on Mobile
 
-- **Decision**: 5 tabbed sections — Resources, Traits, Bonds, Magic Effects, Feed
-- **Rationale**: Traits and bonds are distinct enough to warrant separate tabs. If a future Actions tab is needed, merge Traits & Bonds back to make room.
-- **Tab order**:
-  1. **Resources** — 4 meter bars + skills grid + magic stats
+- **Decision**: 6 tabbed sections — Overview, Traits, Bonds, Magic, Skills & Stats, Feed
+- **Rationale**: Skills and magic stats are data-dense enough to warrant their own tab. "Overview" replaced "Resources" to include a character description block, the Find Time action, and a summary of counts (traits/bonds/effects) alongside a non-zero skill snapshot.
+- **Tab order** (matches `CHARACTER_TABS` in `src/features/character/types.ts`):
+  1. **Overview** — character description, Find Time action, count summary (traits/bonds/effects), non-zero skills snapshot
   2. **Traits** — Core traits (2) + role traits (3), each with charge dots + recharge button. Collapsed "Past" section.
   3. **Bonds** — Active bonds with charge dots, maintain button, trauma badges. Collapsed "Past" section.
-  4. **Magic Effects** — Active effects with type badge, charges, use/retire buttons. Collapsed "Past" section.
-  5. **Feed** — Character-specific event/story feed with "Load more"
+  4. **Magic** — Active magic effects with type badge, charges, use/retire buttons. Collapsed "Past" section.
+  5. **Skills & Stats** — Full SkillGrid (2×4) + MagicStatGrid (5 stats with XP bar)
+  6. **Feed** — Character-specific event/story feed with "Load more"
+
+> Implementation note (2026-04-03): tab IDs are `overview`, `traits`, `bonds`, `magic`, `skills`, `feed`. The "Skills & Stats" tab panel is keyed `skills`.
 
 ### Desktop: Three-Column Layout
 
-- **Decision**: No tabs on desktop. Three-column scrollable layout.
-- **Layout**:
+- **Decision**: No tabs on desktop. Sticky MeterHeader above a three-column scrollable grid.
+- **Layout** (matches `CharacterDesktopLayout.tsx`):
   ```
-  LEFT COLUMN           MIDDLE COLUMN         RIGHT COLUMN
+  ── STICKY METER HEADER (full width) ──────────────────────────────
   ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
-  │ Meters (4 bars)│   │ Core Traits    │   │ Magic Effects  │
-  │                │   │ Role Traits    │   │                │
+  │ Find Time btn  │   │ Core Traits    │   │ Magic Effects  │
+  ├────────────────┤   │ Role Traits    │   │                │
+  │ Skills (2x4)   │   │ Past Traits ▼  │   │ Past Effects ▼ │
   ├────────────────┤   ├────────────────┤   │                │
-  │ Skills (2x4)   │   │ Bonds          │   │                │
-  ├────────────────┤   │                │   │                │
-  │ Magic Stats    │   │                │   │                │
-  ├────────────────┤   │                │   │                │
-  │ Feed           │   │                │   │                │
-  │ (fills bottom) │   │                │   │                │
+  │ Magic Stats    │   │ Bonds          │   │                │
+  ├────────────────┤   │ Past Bonds ▼   │   │                │
+  │ Feed           │                        │                │
+  │ (fills bottom) │                        │                │
   └────────────────┘   └────────────────┘   └────────────────┘
   ```
-- **Implications**: Tabs component only renders on mobile (< 768px). Desktop wraps the same section components in a CSS grid.
+- **Implications**: `CharacterDesktopLayout` renders with `hidden lg:grid lg:grid-cols-3`. `CharacterTabs` renders with `lg:hidden`. MeterHeader renders above both, always sticky.
+
+> Implementation note (2026-04-03): desktop breakpoint is `lg` (1024px), not `md` (768px) as originally planned. The diagram above reflects the actual implementation in `CharacterDesktopLayout.tsx`.
 
 ### Meter Bars: Bar + Numeric
 
@@ -134,11 +144,12 @@ The player's own character sheet polls `GET /characters/{id}` at 15s (or 5s duri
 - **Pattern**: At low fill, normal stress red (#e05545). As ratio approaches 1.0, color shifts brighter/more saturated and a subtle pulse animation begins at ~80% fill. At 100% (cap reached), strong pulsing border.
 - **Implications**: MeterBar component for stress accepts a `warning` mode that interpolates color intensity based on fill ratio.
 
-### Direct Actions: Inline + FAB Drawer
+### Direct Actions: Inline Buttons
 
-- **Decision**: Action buttons appear inline on their relevant items AND a floating action button opens a quick-action drawer listing all currently valid actions.
-- **FAB drawer contents**: Lists all direct actions that are currently valid — Find Time (if Plot >= 3), plus each trait that can be recharged, each bond that can be maintained, each effect that can be used/retired. Tapping an action in the drawer either executes it (Find Time) or scrolls to the relevant item.
-- **Implications**: FAB is a fixed-position button in the bottom-right corner (above mobile bottom nav). Drawer uses Radix Dialog or Sheet.
+- **Decision**: Action buttons appear inline on their relevant items. Find Time is in the Overview tab (mobile) and in a card at the top of the left desktop column. Recharge and Maintain appear directly on each TraitItem and BondItem respectively. Use and Retire appear on MagicEffectItem.
+- **Implications**: No FAB drawer was implemented. All actions are reachable by navigating to the relevant tab/column.
+
+> Implementation note (2026-04-03): the original spec described an additional floating action button (FAB) drawer as a quick-access shortcut. This was not built in Phase 1. The inline-only pattern was sufficient for the initial character sheet. The FAB drawer can be added in a later phase if usability testing reveals a need.
 
 ### Find Time: Disable at Plot < 3
 
@@ -166,10 +177,12 @@ The player's own character sheet polls `GET /characters/{id}` at 15s (or 5s duri
 
 ### Retire Effect: Confirmation Dialog
 
-- **Decision**: Require confirmation dialog before retiring a magic effect
-- **Rationale**: Narratively significant and permanent. Design system principle #5: "show what will happen."
+- **Decision**: Require confirmation dialog before retiring a magic effect. **Instant effects have no interactive action buttons at all** — they are display-only once created.
+- **Rationale**: Narratively significant and permanent. Design system principle #5: "show what will happen." Instant effects are one-time outcomes already consumed; there is no meaningful retire action for them.
 - **Pattern**: Radix Dialog — "Retire [Effect Name]? This will permanently deactivate this effect. You will lose access to its abilities." Confirm/Cancel buttons.
-- **Implications**: Also applies to other permanent actions: retiring a trait, sacrificing a bond (handled in proposal wizard).
+- **Implications**: `MagicEffectItem` renders action buttons only when `effect_type !== "instant"`. Charged effects show Use + Retire. Permanent effects show Retire only.
+
+> Implementation note (2026-04-03): diverges from earlier spec note that said "instant: power level + Retire button". Instant effects show power level but no buttons.
 
 ### NPC Character Page: Simplified View
 

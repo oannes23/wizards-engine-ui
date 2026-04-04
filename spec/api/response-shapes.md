@@ -70,7 +70,7 @@ interface EntityRef {
 ## Enums
 
 ```typescript
-type UserRole = 'gm' | 'player'
+type UserRole = 'gm' | 'player' | 'viewer'
 type DetailLevel = 'full' | 'simplified'
 type SessionStatus = 'draft' | 'active' | 'ended'
 type ProposalStatus = 'pending' | 'approved' | 'rejected'
@@ -270,7 +270,13 @@ interface UserResponse {
   display_name: string
   role: UserRole
   character_id: string | null
-  login_url?: string          // GM sees this for other users
+  login_url?: string          // GM sees this for other users; viewers do not
+}
+
+// GET /me returns additional capability flags:
+interface MeResponse extends UserResponse {
+  can_view_gm_content: boolean   // true for GM and viewer
+  can_take_gm_actions: boolean   // true for GM only
 }
 ```
 
@@ -285,6 +291,7 @@ interface CharacterDetailResponse extends BaseEntity, SoftDeletable {
   description: string | null
   notes: string | null
   attributes: Record<string, unknown> | null  // freeform JSON, primarily for NPC data
+  bond_distance: number | null  // null=GM/viewer, 0=self, 1-3=hop distance, 4+=unreachable (CR-013)
 
   // Bonds — always present, split by status
   bonds: {
@@ -419,6 +426,7 @@ interface ProposalResponse extends BaseEntity {
   calculated_effect: Record<string, unknown> | null  // varies by action_type (see Calculated Effects section)
   gm_notes: string | null
   gm_overrides: Record<string, unknown> | null       // see GM Overrides section
+  revision_count: number            // increments each time a rejected proposal is edited and resubmitted (CR-014)
   event_id: string | null          // set on approval
   rider_event_id: string | null    // set if rider event created
   clock_id: string | null          // resolve_clock only
@@ -447,6 +455,7 @@ interface GroupDetailResponse extends BaseEntity, SoftDeletable {
   tier: number
   description: string | null
   notes: string | null
+  bond_distance: number | null  // null=GM/viewer, 1-3=hop distance, 4+=unreachable (CR-013)
   traits: CharacterTraitResponse[]
   bonds: BondDisplayResponse[]
   members: Array<{ id: string; name: string; detail_level: DetailLevel }>
@@ -461,6 +470,7 @@ interface LocationDetailResponse extends BaseEntity, SoftDeletable {
   description: string | null
   parent_id: string | null
   notes: string | null
+  bond_distance: number | null  // null=GM/viewer, 1-3=hop distance, 4+=unreachable (CR-013)
   traits: CharacterTraitResponse[]
   bonds: BondDisplayResponse[]
   presence: Array<{
@@ -564,6 +574,7 @@ interface TraitTemplateResponse extends BaseEntity, SoftDeletable {
 interface InviteResponse {
   id: string              // ULID — this IS the shareable code
   is_consumed: boolean
+  role: 'player' | 'viewer'  // invite target role (default: 'player')
   login_url: string       // computed: "/login/{id}"
   created_at: string      // ISO 8601 UTC
 }
@@ -938,10 +949,13 @@ interface GmActionRequest {
 | `cookie_missing` | All authenticated | No auth cookie present |
 | `cookie_invalid` | All authenticated | Auth cookie invalid |
 | `account_inactive` | All authenticated | User account deactivated |
-| `insufficient_role` | GM-only endpoints | Player accessing GM endpoint |
 | `invite_consumed` | POST /auth/login | Invite already redeemed |
 
 ### 403 Forbidden
+
+| Code | Context | Description |
+|------|---------|-------------|
+| `insufficient_role` | GM-only endpoints | Player or viewer accessing GM-mutation endpoint. Viewers get "Read-only access" toast; players get "Permission denied". |
 
 | Code | Endpoints | Description |
 |------|-----------|-------------|

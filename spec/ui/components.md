@@ -1,65 +1,77 @@
 # Component Catalog
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Partially verified (Phase 0 + Phase 1 complete)
+> Last verified: 2026-04-03
 > Related: [design-system.md](design-system.md), [player-views.md](player-views.md), [gm-views.md](gm-views.md)
 
 ## Primitives
 
 Domain-agnostic, pure presentation components in `src/components/ui/`.
 
-| Component | Description | Props |
-|-----------|-------------|-------|
-| **MeterBar** | Segmented horizontal bar with filled/empty/unavailable segments and numeric label | `label`, `value`, `max`, `effectiveMax?`, `color` |
-| **ChargeDots** | Row of filled/empty/degraded dots | `charges`, `maxCharges`, `degradations?` |
-| **ClockBar** | Linear segmented progress bar with N segments, M filled, plus numeric label | `segments`, `progress`, `isCompleted?`, `size?` |
-| **StatusBadge** | Colored pill for statuses | `status`, `variant` (proposal/session/story) |
-| **VisibilityBadge** | Visibility level indicator | `level` |
-| **ActionTypeBadge** | Colored label for action types | `actionType` |
-| **RoleBadge** | "GM" or "Player" pill | `role` |
-| **EntityLink** | Clickable entity reference with type icon | `type` (character/group/location/story), `id`, `name` |
-| **ToastNotification** | Bottom-anchored toast | `message`, `variant` (error/success), `duration` |
-| **LoadMoreButton** | Cursor pagination trigger | `onClick`, `isLoading`, `hasMore` |
-| **StepIndicator** | Multi-step progress circles | `steps`, `currentStep` |
-| **ExpandableSection** | Collapsible section with toggle | `title`, `defaultOpen?`, `children` |
-| **EmptyState** | Placeholder for empty lists | `icon`, `title`, `description?`, `action?` (button label + onClick) |
-| **Modal** | Base dialog wrapper (uses Radix Dialog) | `open`, `onClose`, `title`, `children` |
-| **ConfirmModal** | Title + message + Cancel/Confirm buttons | `open`, `onClose`, `title`, `message`, `confirmLabel`, `onConfirm`, `variant?` (danger/default) |
-| **NarrativeModal** | Title + textarea + Cancel/Submit buttons | `open`, `onClose`, `title`, `placeholder?`, `onSubmit` |
-| **StarToggle** | ☆/★ toggle for starring entities | `isStarred`, `onToggle` |
+All Phase 0 primitives are implemented. Status column: **Impl** = implemented, **Spec** = spec only.
+
+| Component | Status | Description | Props |
+|-----------|--------|-------------|-------|
+| **MeterBar** | Impl | Segmented horizontal bar with filled/empty/unavailable segments and numeric label | `label`, `value`, `max`, `effectiveMax?`, `color`, `showWarning?` |
+| **ChargeDots** | Impl | Row of filled/empty/degraded dots | `charges`, `maxCharges`, `degradations?` |
+| **ClockBar** | Impl | Linear segmented progress bar with N segments, M filled, plus numeric label | `segments`, `progress`, `isCompleted?`, `size?` |
+| **StatusBadge** | Impl | Colored pill for statuses | `status`, `variant` (proposal/session/story) |
+| **VisibilityBadge** | Spec | Visibility level indicator | `level` |
+| **ActionTypeBadge** | Spec | Colored label for action types | `actionType` |
+| **RoleBadge** | Spec | Role pill: "GM", "Player", or "Viewer" | `role` |
+| **EntityLink** | Impl | Clickable entity reference with type icon. Faded styling (`opacity-50`) when `isDeleted` is true. | `type` (character/group/location/story), `id`, `name`, `isDeleted?` |
+| **TimeDisplay** | Impl | Formats `time_now` integer into Season display: "Time Now 42 (Chaos 19)". 6 seasons of 23 each: Tutorial, Chaos, Discord, Confusion, Bureaucracy, Aftermath. | `timeNow` |
+| **ToastNotification** | Impl | Bottom-anchored toast (via Radix Toast + `useToast`) | `message`, `variant` (error/success), `duration` |
+| **LoadMoreButton** | Impl | Cursor pagination trigger | `onClick`, `isLoading`, `hasMore` |
+| **StepIndicator** | Impl | Multi-step progress circles | `steps`, `currentStep` |
+| **ExpandableSection** | Impl | Collapsible section with toggle | `title`, `defaultOpen?`, `children` |
+| **EmptyState** | Impl | Placeholder for empty lists | `icon`, `title`, `description?`, `action?` (button label + onClick) |
+| **Modal** | Impl | Base dialog wrapper (uses Radix Dialog) | `open`, `onClose`, `title`, `children` |
+| **ConfirmModal** | Impl | Title + message + Cancel/Confirm buttons | `open`, `onClose`, `title`, `message`, `confirmLabel`, `onConfirm`, `variant?` (danger/default) |
+| **NarrativeModal** | Spec | Title + textarea + Cancel/Submit buttons | `open`, `onClose`, `title`, `placeholder?`, `onSubmit` |
+| **StarToggle** | Impl | ☆/★ toggle for starring entities | `isStarred`, `onToggle` |
 
 ## Composites
 
 Domain-aware components that assemble primitives. In `src/features/*/` directories.
 
-| Component | Feature | Description |
-|-----------|---------|-------------|
-| **FeedItem** | `feed/` | Discriminated union renderer for event vs. story_entry |
-| **EventCard** | `feed/` | Event type icon+label, narrative, changes_summary, target links, is_own highlight, expandable detail, rider sub-items |
-| **StoryEntryCard** | `feed/` | Story name link, entry text, author, timestamp |
-| **FeedList** | `feed/` | Paginated chronological list with "Load older" button, polling-aware new-item banner |
-| **ProposalCard** | `proposals/` | Accordion showing proposal summary; expands to detail + approve/reject (GM) |
-| **GameObjectCard** | `world/` | Shared card for character/group/location with type icon, name, subtitle, star toggle |
-| **CharacterSummaryRow** | `characters/` | Compact row: name + 4 mini meter bars |
-| **ClockCard** | `clocks/` | Clock name + ClockBar + progress label |
-| **TraitItem** | `characters/` | Trait name, description, slot badge, ChargeDots, recharge button |
-| **BondItem** | `characters/` | Bond target, ChargeDots, degradation count, trauma badge, maintain button |
-| **MagicEffectItem** | `characters/` | Effect name, type badge, charges, use/retire buttons |
-| **StoryEntry** | `stories/` | Single entry: author, text, timestamp, edit/delete for owner. Inline edit mode. |
-| **SkillGrid** | `characters/` | 8 skills in compact 2x4 grid with level dot indicators |
-| **MagicStatGrid** | `characters/` | 5 magic stats with level + XP bar display |
-| **SacrificeBuilder** | `proposals/` | Inline multi-type sacrifice selection with running gnosis-equivalent total |
-| **ModifierSelector** | `proposals/` | Three-slot picker (Core Trait / Role Trait / Bond) with charge display |
-| **DicePoolBar** | `proposals/` | Sticky summary bar with live dice pool calculation + costs + Next button |
-| **CalculatedEffectCard** | `proposals/` | Formatted summary of server-computed calculated_effect |
-| **DataTable** | shared | Responsive: sortable table (desktop) / card list (mobile) with column filters |
-| **NavBar** | shared | Responsive nav with role-specific tabs, badges, and GM More dropdown |
-| **ActiveSessionBanner** | `sessions/` | Persistent banner for active session state (player: join/leave; GM: link to detail) |
-| **GmOverridesForm** | `proposals/` | Approval options: narrative override + flags + magic overrides sub-panel + rider event |
-| **RiderEventForm** | `proposals/` | Compact GM action type-selector for rider events |
-| **ParticipantList** | `sessions/` | Session participants with add/remove, "Add All", contribution toggle, searchable dropdown |
-| **PresenceTiers** | `locations/` | Tiered entity list with opacity degradation (100%/70%/50%), empty tier hiding |
-| **BreadcrumbNav** | `locations/` | Ancestor breadcrumb trail with middle truncation at depth > 3 |
+Status: **Impl** = implemented (Phase 0/1), **Spec** = spec only.
+
+| Component | Feature | Status | Description |
+|-----------|---------|--------|-------------|
+| **FeedItem** | `feeds/` | Impl | Discriminated union renderer for event vs. story_entry |
+| **EventCard** | `feeds/` | Impl | Event type badge (domain-colored), narrative, target links via EntityLink, is_own highlight, expandable changes summary, rider sub-items (collapse toggle implemented; rider grouping deferred — see events-and-feeds.md) |
+| **StoryEntryCard** | `feeds/` | Impl | Story name link, entry text (`item.text`), author, timestamp |
+| **FeedList** | `feeds/` | Impl | Paginated chronological list with "Load older" button, polling-aware new-item banner, FeedSkeleton on initial load |
+| **MeterHeader** | `character/` | Impl | Sticky bar with character name + 4 MeterBars; null for simplified/NPC |
+| **TraitItem** | `character/` | Impl | Trait name, description, slot badge (Core/Role), ChargeDots, recharge button |
+| **TraitsSection** | `character/` | Impl | Labeled group of TraitItems with slot count header (e.g. "Core Traits (1/2)") |
+| **BondItem** | `character/` | Impl | Bond target EntityLink, label, ChargeDots with degradation, trauma badge, maintain button |
+| **BondsSection** | `character/` | Impl | Labeled group of BondItems with slot count header |
+| **MagicEffectItem** | `character/` | Impl | Effect name, type badge, power level, ChargeDots (charged only), Use button, Retire button; **instant effects show no action buttons** |
+| **MagicEffectsSection** | `character/` | Impl | Labeled group of MagicEffectItems with slot count header |
+| **SkillGrid** | `character/` | Impl | 8 skills in compact 2×4 grid with filled/empty dot indicators (up to SKILL_MAX=3) |
+| **MagicStatGrid** | `character/` | Impl | 5 magic stats with level badge + XP progress bar (MAGIC_STAT_XP_PER_LEVEL=5 segments) |
+| **CharacterTabs** | `character/` | Impl | 6-tab mobile layout: Overview, Traits, Bonds, Magic, Skills & Stats, Feed |
+| **MyStoriesSidebar** | `feeds/` | Impl | Compact active-story list; desktop=sidebar, mobile=collapsible |
+| **StarToggle (connected)** | `feeds/` | Impl | Feature-layer star toggle wrapping the primitive with optimistic mutation |
+| **ProposalCard** | `proposals/` | Spec | Accordion showing proposal summary; expands to detail + approve/reject (GM) |
+| **GameObjectCard** | `world/` | Spec | Shared card for character/group/location with type icon, name, subtitle, star toggle |
+| **CharacterSummaryRow** | `character/` | Spec | Compact row: name + 4 mini meter bars |
+| **ClockCard** | `clocks/` | Spec | Clock name + ClockBar + progress label |
+| **StoryEntry** | `stories/` | Spec | Single entry: author, text, timestamp, edit/delete for owner. Inline edit mode. |
+| **SacrificeBuilder** | `proposals/` | Spec | Inline multi-type sacrifice selection with running gnosis-equivalent total |
+| **ModifierSelector** | `proposals/` | Spec | Three-slot picker (Core Trait / Role Trait / Bond) with charge display |
+| **DicePoolBar** | `proposals/` | Spec | Sticky summary bar with live dice pool calculation + costs + Next button |
+| **CalculatedEffectCard** | `proposals/` | Spec | Formatted summary of server-computed calculated_effect |
+| **DataTable** | shared | Spec | Responsive: sortable table (desktop) / card list (mobile) with column filters |
+| **NavBar** | shared | Impl | Responsive nav with role-specific items; player: 5 items (Feed, Character, Proposals, World, Profile); GM: 5 items (Queue, Feed, World, Sessions, More→/gm/players) |
+| **ActiveSessionBanner** | `sessions/` | Spec | Persistent teal-accented banner for active session state (player: join/leave; GM: link to detail). Moderate prominence — visible but not disruptive. |
+| **GmOverridesForm** | `proposals/` | Spec | Approval options: narrative override + flags + magic overrides sub-panel + rider event |
+| **RiderEventForm** | `proposals/` | Spec | Compact GM action type-selector for rider events |
+| **ParticipantList** | `sessions/` | Spec | Session participants with add/remove, "Add All", contribution toggle, searchable dropdown |
+| **PresenceTiers** | `locations/` | Spec | Tiered entity list with opacity degradation (100%/70%/50%), empty tier hiding |
+| **BreadcrumbNav** | `locations/` | Spec | Ancestor breadcrumb trail with middle truncation at depth > 3 |
 
 ## Page-Level Components
 
@@ -83,9 +95,11 @@ Route pages in `src/app/`. Thin composition layer — import from features, comp
 
 ### NavBar: Role-Split with 5 Items
 
-- **Decision**: Player nav: Sheet, Proposals, Feed, World, Sessions. GM nav: Queue, Feed, World, Sessions, More (dropdown containing Players & Invites, Trait Templates, Clocks, GM Actions). Badges: Proposals (new results count) for player, Queue (pending count) for GM. Active session banner positioned above nav on mobile, below on desktop.
-- **Rationale**: 5 items is the maximum for comfortable mobile bottom nav. GM has more pages, so the "More" dropdown keeps the bar to 5. Badges surface the most important status without navigating.
-- **Implications**: NavBar component receives `role` prop from auth context. Badge counts from polling queries. More dropdown uses Radix DropdownMenu.
+- **Decision**: Player nav: Feed, Character, Proposals, World, Profile. GM nav: Queue, Feed, World, Sessions, More (→ /gm/players). Badges: pending proposal results for player, pending queue count for GM. Active session banner positioned above nav on mobile, below on desktop.
+- **Rationale**: 5 items is the maximum for comfortable mobile bottom nav. GM has more pages, so the "More" item keeps the bar to 5. Badges surface the most important status without navigating.
+- **Implications**: NavBar component receives `items` array and `role` prop from layout. Badge counts from polling queries.
+
+> Implementation note (2026-04-03): player nav items are Feed (`/`), Character (`/character`), Proposals (`/proposals`), World (`/world`), Profile (`/profile`). "Sessions" was not included in the player nav at this stage — session access is via World or a later addition. "Sheet" was renamed "Character". "More" on GM nav links directly to `/gm/players` (not a dropdown in the current implementation).
 
 ### MeterBar: Segmented Bar + Number
 
@@ -146,8 +160,8 @@ Route pages in `src/app/`. Thin composition layer — import from features, comp
 
 Primitives should be built first (Epic 0.1), as they are used across all features. Composites are built with their parent feature Epics. Build from the inside out:
 
-1. MeterBar, ChargeDots, ClockBar, StatusBadge, EntityLink, EmptyState, Modal variants, StarToggle (Phase 0)
-2. TraitItem, BondItem, MagicEffectItem, SkillGrid, MagicStatGrid, CharacterSummaryRow (Phase 1 — Character Sheet)
-3. FeedItem, EventCard, StoryEntryCard, FeedList, ActiveSessionBanner (Phase 2 — Feeds)
-4. ProposalCard, ModifierSelector, SacrificeBuilder, DicePoolBar, CalculatedEffectCard, GmOverridesForm, RiderEventForm (Phase 2 — Proposals)
+1. **[Complete]** MeterBar, ChargeDots, ClockBar, StatusBadge, EntityLink, EmptyState, Modal variants, StarToggle (Phase 0 — Epic 0.1)
+2. **[Complete]** MeterHeader, TraitItem, TraitsSection, BondItem, BondsSection, MagicEffectItem, MagicEffectsSection, SkillGrid, MagicStatGrid, CharacterTabs (Phase 1 — Epic 1.2)
+3. **[Complete]** FeedItem, EventCard, StoryEntryCard, FeedList, MyStoriesSidebar, StarToggle (connected), PlayerFeedPage (Phase 1 — Epic 2.3 Batch H)
+4. CharacterSummaryRow, ProposalCard, ModifierSelector, SacrificeBuilder, DicePoolBar, CalculatedEffectCard, GmOverridesForm, RiderEventForm, ActiveSessionBanner (Phase 2 — Proposals + remaining feeds)
 5. GameObjectCard, DataTable, PresenceTiers, BreadcrumbNav, ParticipantList (Phase 3 — World Browser & Sessions)

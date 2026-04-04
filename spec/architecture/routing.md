@@ -11,7 +11,7 @@ The app uses three Next.js route groups with distinct layouts:
 | Group | Layout | Nav | Default Route |
 |-------|--------|-----|---------------|
 | `(auth)/` | Minimal, no nav | None | `/login` |
-| `(player)/` | Player nav bar | Feed, Character, Proposals, World, Profile | `/` (Feed) |
+| `(player)/` | Player nav bar | Feed, Character, Proposals, World, Profile | `/` (Feed — player home view) |
 | `(gm)/` | GM nav bar | Queue, Feed, World, Sessions, More | `/gm` (Queue) |
 
 ## Full Route Inventory
@@ -23,7 +23,7 @@ The app uses three Next.js route groups with distinct layouts:
 | `/login` | LoginPage | Code input form |
 | `/login/[code]` | LoginCodePage | Magic link deep-link, auto-submits |
 | `/setup` | SetupPage | GM first-run bootstrap |
-| `/join` | JoinPage | Invite redemption: display name + character name |
+| `/join` | JoinPage | Invite redemption: display name + character name (character name optional for viewer invites) |
 
 ### Player Routes — `(player)/`
 

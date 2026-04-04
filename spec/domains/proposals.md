@@ -50,7 +50,29 @@ Players can edit pending or rejected proposals (triggers recalculation). Players
 | `resolve_clock` | Clock completed | Fill in outcome narrative |
 | `resolve_trauma` | Stress hit effective max | Select which bond becomes trauma |
 
-System proposals appear at the top of the GM queue with visual urgency.
+System proposals are visually distinct in the GM queue (different card styling and icon) and pinned at the top, but not blocking — the GM can scroll past them.
+
+### GM Queue Sort Order
+
+Frontend sorts client-side (API returns newest-first by ULID):
+1. **System proposals** pinned at top (visually distinct styling)
+2. **Player proposals** sorted oldest-pending-first (FIFO — fair to players, no starvation)
+
+### Proposal Revision Flow
+
+When a player edits a rejected proposal (`PATCH /proposals/{id}`), the backend automatically transitions status back to `pending` and creates a `proposal.revised` event. The frontend presents this as a two-step UX: player opens edit form, makes changes, then clicks "Resubmit" (which triggers the PATCH).
+
+The GM sees a revision count badge on resubmitted proposals (e.g., "Revised 2x") via the `revision_count` field on `ProposalResponse` (CR-014 implemented — stored on the model, no event counting needed).
+
+### work_on_project Rider Event Pre-Fill
+
+When the GM approves a `work_on_project` proposal that has an associated `clock_id`, the approval form pre-fills a rider event for `clock.advanced` targeting that clock. The GM can accept, modify, or remove the pre-filled rider before confirming approval.
+
+### Action Availability by Mode
+
+The Proposal Wizard Step 1 groups actions by availability:
+- Available actions shown first (session actions during active session, downtime actions during downtime)
+- Collapsed "Unavailable during [session/downtime]" section below with greyed-out actions
 
 ## Selections Schema by Action Type
 

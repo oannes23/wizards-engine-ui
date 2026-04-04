@@ -1,7 +1,7 @@
 # Traits
 
-> Status: Deepened
-> Last verified: 2026-03-26
+> Status: Verified
+> Last verified: 2026-04-03
 > Related: [characters.md](characters.md), [../api/contract.md#trait-templates](../api/contract.md#trait-templates)
 
 ## Overview

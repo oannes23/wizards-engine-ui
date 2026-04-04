@@ -44,12 +44,12 @@ The longest sequential chain for the core gameplay loop:
 
 | Phase | Epic | Est. Stories | Risk | Status |
 |-------|------|-------------|------|--------|
-| 0 | [0.1 Scaffolding](phase0-scaffolding.md) | 6–8 | Medium | Not Started |
-| 1 | [1.1 Auth & Onboarding](phase1-auth-onboarding.md) | 5–6 | Medium | Not Started |
-| 1 | [1.2 Character Sheet](phase1-character-sheet.md) | 7–9 | High | Not Started |
+| 0 | [0.1 Scaffolding](phase0-scaffolding.md) | 6–8 | Medium | Complete |
+| 1 | [1.1 Auth & Onboarding](phase1-auth-onboarding.md) | 5–6 | Medium | Complete |
+| 1 | [1.2 Character Sheet](phase1-character-sheet.md) | 7–9 | High | Complete |
 | 2 | [2.1 Proposals](phase2-proposals.md) | 8–10 | **Critical** | Not Started |
 | 2 | [2.2 GM Queue](phase2-gm-queue.md) | 5–6 | Medium | Not Started |
-| 2 | [2.3 Feeds & Events](phase2-feeds.md) | 6–7 | Low | Not Started |
+| 2 | [2.3 Feeds & Events](phase2-feeds.md) | 6–7 | Low | In Progress (Batch H done) |
 | 3 | [3.1 World Browser](phase3-world-browser.md) | 7–8 | Low | Not Started |
 | 3 | [3.2 GM World Management](phase3-gm-world-management.md) | 8–10 | High | Not Started |
 | 3 | [3.3 Sessions](phase3-sessions.md) | 5–6 | Medium | Not Started |

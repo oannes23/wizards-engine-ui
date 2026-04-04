@@ -57,6 +57,9 @@ interface AuthState {
   isLoading: boolean      // true during initial /me check
   isGm: boolean           // derived: user?.role === 'gm'
   isPlayer: boolean       // derived: user?.role === 'player'
+  isViewer: boolean       // derived: user?.role === 'viewer'
+  canViewGmContent: boolean  // derived: user?.can_view_gm_content (GM + viewer)
+  canTakeGmActions: boolean  // derived: user?.can_take_gm_actions (GM only)
   characterId: string | null  // user?.character_id
 }
 ```
@@ -137,9 +140,21 @@ The frontend and backend run on different origins. Required backend configuratio
 
 ### GM Routing: Separate Layouts
 
-- **Decision**: Keep `(player)/layout.tsx` and `(gm)/layout.tsx` as distinct layouts with separate role checks
-- **Rationale**: Clean separation. Player layout rejects non-players. GM layout rejects non-GMs. GM accesses character views via `(gm)/character/` route that reuses character feature components (not by navigating to player routes).
-- **Implications**: GM nav and player nav are separate components. GM character page at `(gm)/character/page.tsx` imports the same feature components as `(player)/character/page.tsx` but with GM layout wrapper.
+- **Decision**: Keep `(player)/layout.tsx` and `(gm)/layout.tsx` as distinct layouts with separate role checks. Viewers use the `(gm)/` layout in read-only mode.
+- **Rationale**: Clean separation. Player layout rejects non-players. GM layout accepts GM and viewer roles (`can_view_gm_content === true`). GM accesses character views via `(gm)/character/` route that reuses character feature components (not by navigating to player routes).
+- **Implications**: GM nav and player nav are separate components. GM character page at `(gm)/character/page.tsx` imports the same feature components as `(player)/character/page.tsx` but with GM layout wrapper. Viewer uses GM layout but all mutation buttons (approve, reject, create, edit, delete) are hidden when `can_take_gm_actions === false`.
+
+### Viewer Routing
+
+- **Decision**: Viewers route to the GM dashboard (read-only) after login. They share the `(gm)/` layout with action buttons hidden.
+- **Rationale**: Viewers need the same views as the GM (dashboard, queue, all proposals, all characters) but without mutation capabilities. Reusing the GM layout with capability-based rendering is simpler than a third layout.
+- **Pattern**:
+  ```
+  role === "gm"     → GM dashboard (full access)
+  role === "viewer" → GM dashboard (read-only — hide action buttons)
+  role === "player" → Player character sheet
+  ```
+- **Implications**: Use `can_take_gm_actions` (not `role === "gm"`) to gate action buttons. Use `can_view_gm_content` (not `role === "gm"`) to gate GM-level read access.
 
 ### Login Deep-Link UX: Branded Loading
 
@@ -168,8 +183,11 @@ The frontend and backend run on different origins. Required backend configuratio
 
 ### Logout
 
-- **Decision**: Frontend clears the cookie client-side for soft logout. "Secure logout" uses `POST /me/refresh-link` to invalidate the code server-side. No dedicated logout endpoint exists yet (CR filed). Login codes: ULID format (26 chars) for initial invites, URL-safe base64 (43 chars) after refresh. Case-sensitive.
-- **Rationale**: Cookie IS the session — clearing it locally is sufficient for most cases. Code rotation provides server-side invalidation.
+- **Decision**: Use `POST /api/v1/auth/logout` (204 No Content, no auth required) to clear the httpOnly cookie server-side. For a secure logout that also invalidates the magic link, call `POST /me/refresh-link` first to rotate the code, then `POST /auth/logout` to clear the cookie.
+- **Rationale**: The logout endpoint clears the cookie but does NOT invalidate the login code — the magic link remains usable. This is a "soft logout" (browser session ends, link still works). For a "hard logout" (code revoked), rotate the code first. Login codes: ULID format (26 chars) for initial invites, URL-safe base64 (43 chars) after refresh. Case-sensitive.
+- **Pattern**:
+  - Soft logout: `POST /auth/logout` → clear local auth context → redirect to `/login`
+  - Secure logout: `POST /me/refresh-link` → `POST /auth/logout` → clear local auth context → redirect to `/login`
 
 ### Auth Retry
 

@@ -40,6 +40,8 @@ When a frontend spec requires a backend API change (new endpoint, modified respo
 | CR-010 | Clarify bidirectional bond representation | High | **Resolved** (documented 2026-03-26) |
 | CR-011 | Add domain-specific error codes to catalog | Medium | **Resolved** (documented 2026-03-26) |
 | CR-012 | Define `InviteResponse` shape for `GET /game/invites` | Medium | **Resolved** (documented 2026-03-26) |
+| CR-013 | Bond-distance field on entity detail responses | High | **Implemented** (2026-04-02) |
+| CR-014 | Proposal `revision_count` field | Low | **Implemented** (2026-04-02) |
 
 ---
 

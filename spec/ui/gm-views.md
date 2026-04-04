@@ -16,7 +16,7 @@ The GM's main workspace. Proposal queue with PC status sidebar.
 
 ### Queue Tabs
 
-- **Queue tab**: Pending proposals. System proposals (`origin: "system"`) pinned at top with warning styling. Player proposals sorted newest-first.
+- **Queue tab**: Pending proposals. System proposals (`origin: "system"`) pinned at top with visually distinct styling (different border color, system icon) but not blocking — GM can scroll past. Player proposals sorted **oldest-pending-first** (FIFO). Revision count badge on resubmitted proposals (e.g., "Revised 2x").
 - **Recent tab**: Approved/rejected proposals. Defaults to ~20 items, "Load more" paginates back indefinitely.
 
 ### ProposalCard
@@ -29,7 +29,7 @@ The GM's main workspace. Proposal queue with PC status sidebar.
 - Calculated effect summary (CalculatedEffectCard)
 - **Override options**: Narrative override textarea, gm_overrides checkboxes (force, bond_strained)
 - **Magic overrides** (magic proposals only, collapsed sub-panel): actual_stat, style_bonus, effect_details form
-- **Rider event**: "+ Add Rider" → compact GM action type-selector
+- **Rider event**: "+ Add Rider" → compact GM action type-selector. For `work_on_project` proposals with a `clock_id`, **pre-fill** a `clock.advanced` rider targeting the associated clock. GM can accept, modify, or remove before confirming.
 - Approve button (applies overrides if set)
 - Reject section: rejection note textarea + Reject button
 

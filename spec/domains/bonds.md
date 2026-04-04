@@ -1,7 +1,7 @@
 # Bonds
 
-> Status: Deepened
-> Last verified: 2026-03-26
+> Status: Verified
+> Last verified: 2026-04-03
 > Related: [characters.md](characters.md), [groups.md](groups.md), [locations.md](locations.md), [../glossary.md](../glossary.md)
 
 ## Overview

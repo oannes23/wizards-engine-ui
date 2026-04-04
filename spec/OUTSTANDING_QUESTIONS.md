@@ -15,15 +15,16 @@
 | **Deferred** | 4 |
 | **Total** | **69** |
 
-### New Change Requests from Backend Review
+### Change Requests from Backend Review
 
 The backend questionnaire revealed these gaps requiring code changes:
 
-| CR | Description | Source |
-|----|-------------|--------|
-| Logout endpoint | Add `POST /auth/logout` that clears the httpOnly cookie | BQ-11 |
-| Pydantic 422 normalization | Normalize Pydantic validation errors into standard `{error: {code, message, details}}` envelope | BQ-20 |
-| Proposal optimistic locking | Add `updated_at`-based concurrency control on `PATCH /proposals/{id}` (deferred — existing re-validation-on-approval covers the dangerous race) | BQ-10 / BV-05 |
+| CR | Description | Source | Status |
+|----|-------------|--------|--------|
+| Logout endpoint | `POST /auth/logout` clears the httpOnly cookie | BQ-11 | **Implemented** |
+| Pydantic 422 normalization | All Pydantic errors now use standard `{error: {code, message, details}}` envelope | BQ-20 | **Implemented** (2026-03-29) |
+| 0-participant session validation | `POST /sessions/{id}/start` rejects with `no_participants` if empty | BV-10 | **Implemented** |
+| Proposal optimistic locking | Add `updated_at`-based concurrency control on `PATCH /proposals/{id}` | BQ-10 / BV-05 | **Deferred** (re-validation-on-approval covers the dangerous race) |
 
 ### Key Corrections from Backend
 
@@ -33,9 +34,9 @@ The backend questionnaire revealed these gaps requiring code changes:
 | Clock is_completed | Stored boolean flag | Computed on read from `progress >= segments` |
 | Narrative optionality | Always optional | Required for downtime + direct actions, optional for session actions |
 | Effective stress max = 0 | Possible via 9 traumas | Minimum = 1 (max 8 traumas due to 8 bond slots) |
-| 0-participant session start | Blocked by API | API allows it. Frontend should add confirmation dialog as UX safeguard |
-| Bond-graph entity access | Players can't see filtered entities | Bond-graph applies to feeds/events only. All players can view all game objects |
-| 422 error shape | Single envelope format | Two shapes: domain `{error: {...}}` envelope AND Pydantic `{detail: [...]}` default |
+| 0-participant session start | Blocked by API | ~~API allows it~~ **Resolved**: API now rejects with `no_participants` error (BV-10 implemented) |
+| Bond-graph entity access | Players can't see filtered entities | Bond-graph applies to feeds/events AND entity detail access. Players see full detail only for entities within 3 hops; beyond that, name + description only (CR-013 implemented). All entities remain browsable. |
+| 422 error shape | Single envelope format | ~~Two shapes~~ **Resolved**: All 422 errors now use standard `{error: {...}}` envelope (BQ-20 implemented 2026-03-29) |
 | 201 responses | May be partial | Always full entity, same shape as GET |
 
 ### Original Priority Breakdown (for reference)

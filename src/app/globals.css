@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   Wizards Engine UI — Brand & Game Color System
+   Dark theme only (MVP). Navy palette foundation.
+   ────────────────────────────────────────────── */
+
+@theme inline {
+  /* Brand Colors (from Logo) */
+  --color-brand-navy-deep: #0d0b2e;
+  --color-brand-navy: #1e1b5e;
+  --color-brand-navy-light: #2a2670;
+  --color-brand-blue: #2e6eb5;
+  --color-brand-blue-light: #4a8fd4;
+  --color-brand-teal: #5bbfc4;
+  --color-brand-teal-light: #7ed4d8;
+  --color-brand-teal-muted: #3d8a8e;
+
+  /* Background & Surface */
+  --color-bg-page: #0d0b2e;
+  --color-bg-surface: #1e1b5e;
+  --color-bg-elevated: #2a2670;
+  --color-bg-muted: #16133f;
+
+  /* Text */
+  --color-text-primary: #e8e6f0;
+  --color-text-secondary: #9b97b8;
+  --color-text-accent: #5bbfc4;
+
+  /* Borders */
+  --color-border-default: #2a2670;
+  --color-border-focus: #2e6eb5;
+
+  /* Meter Colors (Semantic Accents) */
+  --color-meter-stress: #e05545;
+  --color-meter-ft: #34d399;
+  --color-meter-plot: #f59e0b;
+  --color-meter-gnosis: #a78bfa;
+
+  /* Status Colors */
+  --color-status-pending: #f59e0b;
+  --color-status-approved: #34d399;
+  --color-status-rejected: #e05545;
+  --color-status-draft: #9b97b8;
+  --color-status-active: #2e6eb5;
+  --color-status-ended: #6b6789;
+
+  /* Fonts */
+  --font-heading: var(--font-crimson-pro), "Crimson Pro", Georgia, "Times New Roman", serif;
+  --font-body: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Global Styles */
+body {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+/* Focus visible — keyboard only */
+*:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Tabular numbers for meter values */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

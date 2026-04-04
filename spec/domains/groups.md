@@ -8,6 +8,8 @@
 
 Groups are Game Objects representing organizations, crews, families, or guilds. They have a power tier, traits, bonds, and derived membership.
 
+**Bond-distance detail gating**: Players see full group details only for groups within 3 hops of their character. Groups outside that range show name and description only. GM and viewer roles always see full detail. See `characters.md` for the full gating decision and CR-013.
+
 ## Key Properties
 
 - **Tier** (integer): Power level. Changed via GM `modify_group` action, not direct PATCH. Display-only in the frontend — no mechanics depend on it.

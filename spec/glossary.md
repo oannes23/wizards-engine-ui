@@ -55,6 +55,8 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 
 **Role Trait** — A character trait in one of the 3 role slots. Has charges. Linked to a Trait Template.
 
+**Season** — One of six named divisions of campaign time, each 23 time units long: Tutorial (1–23), Chaos (24–46), Discord (47–69), Confusion (70–92), Bureaucracy (93–115), Aftermath (116–138). Purely a display concept with no mechanical bearing. Formula: `seasonIndex = floor((timeNow - 1) / 23)`, `seasonTime = ((timeNow - 1) % 23) + 1`. Display format: "Time Now 42 (Chaos 19)".
+
 **Session** — A record of one play session. Lifecycle: Draft → Active → Ended. Only one Active session at a time. Drives FT/Plot distribution to participants.
 
 **Skill** — One of 8 canonical action categories: `awareness`, `composure`, `influence`, `finesse`, `speed`, `power`, `knowledge`, `technology`. Level 0–3 determines base dice pool.
@@ -70,6 +72,8 @@ Canonical terminology for the Wizards Engine UI project. Use these terms consist
 **Trait Template** — A GM-managed catalog entry defining a trait name, description, and type (`core` or `role`). Referenced by trait instances on characters.
 
 **Trauma** — A bond with `is_trauma: true`, created when a character's stress hits effective max. Permanently reduces effective stress max by 1. The chosen bond retires to Past state.
+
+**Viewer** — A user role with GM-level read access but no mutation capabilities. Viewers see all game state (except silent events), are invisible to players in the roster, and have no linked character. All write operations return 403 `insufficient_role`. Uses `can_view_gm_content: true`, `can_take_gm_actions: false` capability flags.
 
 **Visibility Level** — An ordered enum governing event/story visibility: `silent` < `gm_only` < `private` < `bonded` < `familiar` < `public` < `global`.
 

@@ -4,9 +4,9 @@
 > Last verified: 2026-03-27
 > Related: [components.md](components.md), [../domains/proposals.md](../domains/proposals.md), [../domains/characters.md](../domains/characters.md)
 
-## Player Feed (`/`)
+## Player Feed (`/`) — Home View
 
-The player's home page. Desktop: main feed column + My Stories sidebar (sticky). Mobile: collapsible My Stories section at top + feed below.
+The player's **default landing page** after login. Desktop: main feed column + My Stories sidebar (sticky). Mobile: collapsible My Stories section at top + feed below. The feed is the primary expression of the bond graph — what news reaches you is shaped by your connections.
 
 - **All tab**: `GET /me/feed` — all visible events and story entries
 - **Starred tab**: `GET /me/feed/starred` — filtered to starred Game Objects (count in tab label)
@@ -70,7 +70,7 @@ Player's proposals with status filter chips: **All** | **Pending (N)** | **Appro
 
 - **Pending cards**: Action type badge, narrative preview, timestamp, [Edit] [Delete]
 - **Approved cards**: Expanded result card (CalculatedEffectCard) with costs applied, GM note
-- **Rejected cards**: Rejection note displayed, [Revise] button
+- **Rejected cards**: Rejection note displayed, [Edit] and [Resubmit] buttons (two-step: edit fields, then explicitly resubmit)
 
 Badge on the Proposals nav tab shows count of newly approved/rejected since last viewed.
 
@@ -119,6 +119,12 @@ Active session banner in player layout: "[Session name] active" + Join/Leave.
 4-tab layout: **Characters** | **Groups** | **Locations** | **Stories**
 
 Each tab shows a searchable paginated list of GameObjectCards (or story-specific cards for Stories). Search by name within active tab. Stories tab adds status and tag filters.
+
+### Bond-Distance Detail Gating
+
+Players see full entity details only for entities within 3 hops of their character ("public" visibility tier). Entities outside that range show **name and description only** — no meters, traits, bonds, skills, magic effects, etc. The minimal card shows no extra messaging; the absence of detail IS the signal.
+
+GM and viewer roles always see full detail. This requires a backend bond-distance endpoint (CR-013 in PRE_IMPLEMENTATION_QUESTIONS.md).
 
 Clicking a card navigates to the shared detail page. Detail pages are read-only for players — same components as GM detail pages but without edit controls (isGm prop).
 

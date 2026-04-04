@@ -21,7 +21,7 @@ Draft → Active → Ended
 ### Constraints
 
 - Draft sessions can be hard-deleted. Active/ended cannot (400).
-- `time_now` is an abstract integer representing campaign time passage.
+- `time_now` is an abstract integer representing campaign time passage. Displayed to both GM and players using the **Season system** (see glossary): "Time Now 42 (Chaos 19)". Uses the `TimeDisplay` component.
 - `additional_contribution` flag on participants can only be changed during Draft (400 after start).
 
 ## Resource Distribution on Start
@@ -48,9 +48,14 @@ Players can add/remove themselves (Owner auth). GM can manage all participants.
 - **Decision**: Modal shows time_now delta only: "time_now will advance from X to Y. Free Time and Plot will be distributed to N participants." No exact per-participant FT numbers.
 - **Rationale**: FT distribution formula is server-side. Showing the delta provides context without requiring formula knowledge.
 
+### Active Session Visual Emphasis
+
+- **Decision**: Moderate prominence when a session is active. Persistent `ActiveSessionBanner` with teal accent. Nav badge on session-related tabs. Feed and proposal views gain a subtle teal left border to signal "live" state. No layout or navigation restructuring.
+- **Rationale**: Active sessions are the most dynamic part of gameplay. The UI should communicate that energy without being disorienting.
+
 ### Session Edge Cases
 
-- **Decision**: Re-join after leaving is allowed (DELETE + POST for same character succeeds). No double-distribution protection — GM corrects overshoot via direct actions. Backend allows starting with 0 participants; frontend shows a confirmation dialog: "No participants added. Starting will distribute nothing. Continue anyway?" (allows GM solo prep sessions). time_now is non-negative, must be >= last ended session's time_now (equal values allowed, producing 0 FT delta). additional_contribution grants +2 Plot (vs +1 base), is a narrative+mechanical toggle (GM convention like "MVP", "notable RP"), locks on session start.
+- **Decision**: Re-join after leaving is allowed (DELETE + POST for same character succeeds). No double-distribution protection — GM corrects overshoot via direct actions. Backend rejects starting with 0 participants (returns 422 `no_participants`). time_now is non-negative, must be >= last ended session's time_now (equal values allowed, producing 0 FT delta). additional_contribution grants +2 Plot (vs +1 base), is a narrative+mechanical toggle (GM convention like "MVP", "notable RP"), locks on session start.
 
 ## Timeline
 

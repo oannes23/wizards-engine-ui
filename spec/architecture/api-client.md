@@ -80,7 +80,7 @@ class ApiError extends Error {
 | `cookie_missing` | 401 | Global: redirect to `/login` |
 | `cookie_invalid` | 401 | Global: redirect to `/login` |
 | `account_inactive` | 401 | Global: redirect to `/login` |
-| `insufficient_role` | 403 | Toast: "Permission denied" |
+| `insufficient_role` | 403 | Viewer: toast "You have read-only access." / Player: toast "Permission denied" |
 | `not_found` | 404 | Toast or inline "Not found" |
 | `already_setup` | 409 | Inline on setup page |
 | `validation_error` | 422 | Map `details.fields` to form field errors |
@@ -93,7 +93,7 @@ class ApiError extends Error {
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| `auth.ts` | 6 | Login, setup, join, me, refresh-link |
+| `auth.ts` | 7 | Login, logout, setup, join, me, refresh-link |
 | `players.ts` | 5 | Player list, invites, token regeneration |
 | `characters.ts` | 12 | CRUD + direct actions + effects |
 | `sessions.ts` | 11 | CRUD + lifecycle + participants + timeline |

@@ -31,11 +31,11 @@ Story entries appear in feeds alongside events (as `type: "story_entry"` items).
 
 ## Interrogation Decisions
 
-### Story Detail Layout: Journal-Style
+### Story Detail Layout: Journal-Style (Newest First)
 
-- **Decision**: Header (name, status badge, tags as chips, summary, owners as linked names) → Parent link (if applicable) → Sub-arcs section (if children exist) → Entry creation input (always visible) → Entries in reverse-chronological order (newest first). Like a journal / shared fiction log. Entry authors see edit/delete buttons on their own entries. GM sees edit/delete on all entries plus story-level edit controls.
-- **Rationale**: Stories are fundamentally a writing space. Journal-style with newest entries at the top encourages regular contribution and makes it easy to see recent activity. Entry input at the top (before entries) reduces friction.
-- **Implications**: Entries paginated with "Load more" at the bottom (older entries). Shared page for GM and players with role-based controls.
+- **Decision**: Header (name, status badge, tags as chips, summary, owners as linked names) → Parent link (if applicable) → Sub-arcs section (if children exist) → Entry creation input (always visible) → Entries in **reverse-chronological order (newest first)**. Like a journal / shared fiction log. Entry authors see edit/delete buttons on their own entries. GM sees edit/delete on all entries plus story-level edit controls.
+- **Rationale**: Most useful for returning players catching up on what happened recently. Matches the feed's newest-first approach. Stories are fundamentally a writing space — journal-style encourages regular contribution.
+- **Implications**: `GET /stories/{id}` returns the 20 most recent entries (already newest-first). "Load more" at the bottom fetches older entries via `GET /stories/{id}/entries` (oldest-first from API — frontend appends below the current entries). Shared page for GM and players with role-based controls.
 
 ### Entry Creation: Always-Visible Textarea
 

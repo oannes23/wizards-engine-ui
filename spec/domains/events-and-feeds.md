@@ -1,7 +1,7 @@
 # Events & Feeds
 
-> Status: Deepened
-> Last verified: 2026-03-27
+> Status: Verified
+> Last verified: 2026-04-03
 > Related: [stories.md](stories.md), [../api/contract.md#events](../api/contract.md#events), [../api/contract.md#feeds](../api/contract.md#feeds)
 
 ## Events
@@ -58,6 +58,8 @@ type FeedItemResponse =
 
 The renderer must switch on `item.type` to choose the correct sub-component.
 
+> Field naming decision (D1, applied 2026-04-03): The backend story entry field is `entry_text`, but the frontend `FeedItemResponse` discriminated union maps it to `text` for consistency. The `StoryEntryCard` uses `item.text`. This mapping is applied in `src/lib/api/types.ts` — the type uses `text`, and any API transform layer is responsible for the rename.
+
 ### Feed Endpoints
 
 | Endpoint | Scope | Notes |
@@ -107,6 +109,8 @@ The starred feed (`GET /me/feed/starred`) shows events/entries only for starred 
 - **Decision**: Rider events (identified by `parent_event_id`) are shown as an indented sub-item under the parent approval event, with the rider's `changes_summary` visible. Collapsible. If the parent event is not in the current feed page, the rider renders as a standalone item with a "part of [parent event]" link.
 - **Rationale**: Riders are contextually tied to their parent approval. Collapsing preserves the parent context while keeping the feed clean. The standalone fallback handles pagination edge cases.
 - **Implications**: Feed rendering groups items by `parent_event_id`. Indentation via CSS margin. Collapse state is per-group.
+
+> Implementation note (2026-04-03): `FeedItemResponse` (the feed-optimized shape) does not expose `parent_event_id`. `FeedList` builds the rider map but it remains empty at the MVP level — items render flat. Full rider grouping requires the full `EventResponse` for each feed item, which is deferred to a later batch. `FeedItem` already wires `riderItems` prop and the expand toggle is implemented; it just awaits rider data.
 
 ### Player Feed: Feed + Sidebar
 
@@ -159,6 +163,8 @@ The starred feed (`GET /me/feed/starred`) shows events/entries only for starred 
 - Entry text
 - Author character name
 - Relative timestamp
+
+> Outstanding gap (2026-04-03): The `FeedItemResponse` event branch targets array (`{type, id, is_primary}`) does not include a `name` field. `EventCard` currently passes `name={target.id}` to `EntityLink` as a placeholder — entity names in event target links will show IDs until a name resolution hook (similar to `useEntityName()`) is added, or until the backend feed endpoint returns target names.
 
 ### Player Feed Page (`/`)
 

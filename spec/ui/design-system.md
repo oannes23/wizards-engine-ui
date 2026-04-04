@@ -79,6 +79,17 @@ The dark theme uses the brand navy as its foundation instead of generic charcoal
 | Active | `#2e6eb5` (brand blue) | Brand color for active state |
 | Ended | `#6b6789` (muted) | De-emphasized |
 
+### Deleted Entity Styling
+
+Soft-deleted entities (characters, groups, locations) display with their **original name** but visually faded: `opacity-50` on all text and interactive elements. No bracket placeholders or in-world phrasing. Applies to EntityLink, bond/trait references in feeds, proposals, etc.
+
+### Active Session Visual Emphasis
+
+When an active session exists, session-related views gain moderate visual emphasis:
+- `ActiveSessionBanner`: persistent, uses `brand-teal` accent
+- Session-related nav tabs get a subtle teal border or indicator
+- Feed and proposal views gain a `brand-teal` left border accent to signal "live" state
+
 ## Typography
 
 **Font Stack** (Google Fonts, loaded via Next.js `next/font/google`):
